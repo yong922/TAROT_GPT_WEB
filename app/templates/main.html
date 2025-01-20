@@ -11,10 +11,29 @@
     <!-- 메인 카드 -->
     <div class="card">
         <h1>Tarot Nana</h1>
-        <input type="text" placeholder="Input ID" class="input-field">
-        <input type="password" placeholder="Input PW" class="input-field">
-        <button class="btn">Login</button>
-        <button class="btn">Sign Up</button>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div>
+                <!-- {{ form.id.label }} -->
+                {{ form.id(class_="input-field", placeholder="Input ID") }}
+                {% if form.id.errors %}
+                    <p class="error">{{ form.id.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <!-- {{ form.pw.label }} -->
+                {{ form.pw(class_="input-field", placeholder="Input PW") }}
+                {% if form.pw.errors %}
+                    <p class="error">{{ form.pw.errors[0] }}</p>
+                {% endif %}
+            </div>
+            {% if error %}
+                <p class="error" style="color: red;">{{ error }}</p>
+            {% endif %}
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <a href="/signup" class="btn">Sign Up</a>
     </div>
     <!-- Footer -->
     <footer>

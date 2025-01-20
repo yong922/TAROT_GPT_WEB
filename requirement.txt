@@ -6,3 +6,8 @@ langchain_community
 flask
 flask_login
 flask_sqlalchemy
+pymysql
+pybo
+flask_migrate
+flask-wtf
+wtforms
