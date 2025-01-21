@@ -1,10 +1,12 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
-from flask_login import login_user, login_required
-from app.services.user_service import authenticate_user_plain
+from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify
+from flask_login import login_user, login_required, UserMixin
+from app.services.chat_service import ChatService
+from app.services.user_service import authenticate_user_plain, register_user
 from app.forms import UserLoginForm, UserCreateForm
 from flask_login import login_user, current_user
 
 bp = Blueprint('main', __name__)
+chat_service = ChatService()
 
 @bp.route('/', methods=['GET', 'POST'])
 def login():
@@ -46,3 +48,31 @@ def signup():
 @login_required
 def tarot_chat():
     return render_template("tarot_chat.html")
+
+#------
+# 채팅 페이지
+@bp.route("/chat_page/", methods=['GET'])
+def chat_page():
+    return render_template("tarot_chat.html")
+
+
+# 초기 메시지(봇 인사말) 반환
+@bp.route('/get_initial_message/', methods=['GET'])
+def get_initial_message():
+    response_messages = chat_service.get_initial_message()
+    return jsonify(response_messages)
+
+
+# 사용자 메시지 입력
+@bp.route('/send_message/', methods=['POST'])
+def send_message():
+    data = request.get_json()
+    user_message = data.get('text', '')
+
+    if user_message:
+        chat_service.add_user_message(user_message)
+
+    # 업데이트된 메시지 반환
+    # response_messages = chat_service.get_initial_message()
+    response_messages = chat_service.messages
+    return jsonify(response_messages)

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>채팅</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>🔮TAROT NANA👵</title>
     <style>
         /* 배경 이미지 설정 */
         body {
@@ -51,16 +52,60 @@
         /* 채팅 메시지 */
         .message {
             margin-bottom: 15px;
+            max-width: 70%;  /* 메시지 너비 제한 */
+            padding: 10px;
+            border-radius: 10px;
+            word-wrap: break-word;
+            position: relative;
         }
-
+        
+        /* 사용자 말풍선 */
         .message.user {
-            text-align: right;
-            color: #f1f1f1;
+            /* text-align: right;
+            color: #f1f1f1; */
+            /* background-color: #6a0dad; */
+            background-color: rgba(157, 84, 209, 0.8);
+            color: white;
+            margin-left: auto;  /* 오른쪽 정렬 */
+            border-radius: 15px 15px 0 15px;
+        }
+        
+        /* 챗봇 말풍선 */
+        .message.bot {
+            /* text-align: left;
+            color: #a1c4fd; */
+            /* background-color: #a1c4fd; */
+            background-color: rgba(58, 30, 78, 0.8);
+            /* color: #333; */
+            color: white;
+            border-radius: 15px 15px 15px 0;
         }
 
-        .message.bot {
-            text-align: left;
-            color: #a1c4fd;
+        /* 말풍선 꼬리 */
+        .message.user::after,
+        .message.bot::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+        }
+
+        /* 챗봇 말풍선 꼬리 위치 */
+        .message.bot::after {
+            top: 50%;
+            left: -10px;
+            border-top: 10px solid #a1c4fd;
+            transform: translateY(-50%);
+        }
+
+        /* 사용자 말풍선 꼬리 위치 */
+        .message.user::after {
+            top: 50%;
+            right: -10px;
+            border-top: 10px solid #6a0dad ;
+            transform: translateY(-50%);
         }
 
         /* 메시지 입력 필드 */
@@ -106,7 +151,7 @@
         </div>
 
         <div class="input-area">
-            <input type="text" id="message-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요...!" autocomplete="off">
             <button id="send-button">전송</button>
         </div>
 
@@ -114,8 +159,82 @@
             <span id="nickname"></span>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatBox = document.getElementById("chat-box");
+            const messageInput = document.getElementById("message-input");
+            const sendButton = document.getElementById("send-button");
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+            // 서버에서 초기 메시지 가져오기
+            fetch('/get_initial_message', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': csrfToken  // CSRF 토큰을 헤더에 추가가
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 초기 메시지 렌더링
+                    data.forEach(message => {
+                        const messageDiv = document.createElement("div");
+                        messageDiv.className = `message ${message.sender}`;
+                        messageDiv.textContent = message.text;
+                        chatBox.appendChild(messageDiv);
+                    });
+                })
+                .catch(error => console.error("초기 메시지를 가져오는 데 실패했습니다.", error));
 
 
-    </script>
+            // 전송 버튼 클릭 시 메시지 처리
+            function sendMessage() {
+                const userMessage = messageInput.value.trim();
+
+                if (userMessage) {
+                    // 사용자 메시지 화면에 추가
+                    const userMessageDiv = document.createElement("div");
+                    userMessageDiv.className = "message user";
+                    userMessageDiv.textContent = userMessage;
+                    chatBox.appendChild(userMessageDiv);
+
+                    // 서버에 사용자 메시지 전송
+                    fetch('/add_user_message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ text: userMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // 서버에서 반환한 모든 메시지로 화면 업데이트
+                            chatBox.innerHTML = '';  // 기존 메시지 제거
+                            data.forEach(message => {
+                                const messageDiv = document.createElement("div");
+                                messageDiv.className = `message ${message.sender}`;
+                                messageDiv.textContent = message.text;
+                                chatBox.appendChild(messageDiv);
+                            });
+
+                            // 메시지 입력 필드 초기화
+                            messageInput.value = '';
+                        })
+                        .catch(error => console.error("메시지를 서버로 전송하는 데 실패했습니다.", error));
+                }
+            }
+
+            // '전송' 버튼 클릭 시 메시지 전송
+            sendButton.addEventListener("click", sendMessage);
+
+            // 'Enter' 키를 눌렀을 때 메시지 전송
+            messageInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();  // 기본 Enter 동작(줄 바꿈)을 방지
+                    sendMessage();
+                }
+            });
+        });
+    </script>   
 </body>
 </html>
