@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- CSRF 토큰을 메타 태그에 포함 -->
     <title>채팅</title>
     <style>
         /* 배경 이미지 설정 */
@@ -115,7 +116,34 @@
         </div>
     </div>
 
+    <script>
+        // CSRF 토큰을 가져오는 코드
+        var csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        // 전송 버튼 클릭 시 실행되는 코드
+        document.getElementById("send-button").addEventListener("click", function() {
+            var message = document.getElementById("message-input").value;
+            
+            if (message) {
+                // 메시지를 서버로 보내는 AJAX 요청
+                fetch('/send_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrf_token  // CSRF 토큰을 헤더에 포함시킴
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 서버로부터 받은 데이터 처리 (예: 채팅 메시지 화면에 추가)
+                    console.log('Success:', data);
+                    document.getElementById("message-input").value = ''; // 입력창 초기화
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
     </script>
+
 </body>
 </html>

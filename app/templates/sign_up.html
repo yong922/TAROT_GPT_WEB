@@ -1,59 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nana Tarot - Sign Up</title>
-    <!-- CSS 파일 연결 -->
-    <link rel="stylesheet" href="static/css/styles.css"> 
-</head>
-<body>
-    <div class="card">
-        <h1>Sign Up</h1>
-        <form method="POST">
-            {{ form.hidden_tag() }} <!-- CSRF 토큰 -->
-
-            <!-- ID 입력 필드 -->
-            <div class="form-group">
-                {{ form.id(class_="input-field", placeholder="Input ID") }}
-                <button type="button" class="btn">check</button>
-                {% if form.id.errors %}
-                    <p class="error-message">{{ form.id.errors[0] }}</p>
-                {% endif %}
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h1>Sign Up</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        
+        {% if form.errors %}
+        <div class="content-box">
+            <div class="alert alert-danger" role="alert" >
+                {% for field, errors in form.errors.items() %}
+                <strong>{{ form[field].label }}</strong>
+                <ul>
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
             </div>
+        </div>
+        {% endif %}
 
-            <!-- Password 입력 필드 -->
-            <div class="form-group">
-                {{ form.pw(class_="input-field", placeholder="Input PW") }}
-                {% if form.pw.errors %}
-                    <p class="error-message">{{ form.pw.errors[0] }}</p>
-                {% endif %}
-            </div>
+        <!-- flash 오류 -->
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
 
-            <!-- Confirm Password 입력 필드 -->
-            <div class="form-group">
-                {{ form.pw2(class_="input-field", placeholder="Confirm PW") }}
-                {% if form.pw2.errors %}
-                    <p class="error-message">{{ form.pw2.errors[0] }}</p>
-                {% endif %}
-            </div>
 
-            <!-- Nickname 입력 필드 -->
-            <div class="form-group">
-                {{ form.nickname(class_="input-field", placeholder="Nickname") }}
-                {% if form.nickname.errors %}
-                    <p class="error-message">{{ form.nickname.errors[0] }}</p>
-                {% endif %}
-            </div>
+        <!-- 입력 필드 -->
+        <div>
+            {{ form.id(class_="input-field", placeholder="Input ID") }}
+            <button type="button" class="btn">Check</button>
 
-            <!-- Submit 버튼 -->
-            <button type="submit" class="btn">Submit</button>
-        </form>
-    </div>
+        </div>
 
-    <!-- Footer -->
-    <footer>
-        Copyright © Your Website 2025
-    </footer>
-</body>
-</html>
+        <div>
+            {{ form.pw(class_="input-field", placeholder="Input PW") }}
+        </div>
+
+        <div>
+            {{ form.pw2(class_="input-field", placeholder="Confirm PW") }}
+        </div>
+
+        <div>
+            {{ form.nickname(class_="input-field", placeholder="Nickname") }}
+        </div>
+
+        <!-- Submit 버튼 -->
+        <button type="submit" class="btn">Submit</button>
+    </form>
+</div>
+{% endblock %}
+
