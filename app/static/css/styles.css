@@ -3,9 +3,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;               
+  place-items: center; 
   background-image: url('../imgs/bg-purplenight.jpg');
   background-size: cover;
   background-position: center;
@@ -14,11 +13,11 @@ body {
 
 /* 카드 스타일 */
 .card {
-  background: rgba(0, 0, 0, 0.7); /* 반투명한 검은색 */
+  background: rgba(0, 0, 0, 0.5); /* 반투명한 검은색 */
   border-radius: 10px;
   padding: 30px;
   text-align: center;
-  width: 300px;
+  width: 80%;
   color: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
@@ -29,13 +28,23 @@ body {
   margin-bottom: 20px;
 }
 
+/* 출력 필드 스타일 */
+.content-box {
+  background: transparent;
+  border: none; /* 테두리 없음 */
+  padding: 0px; /* 내부 여백 추가 (필요에 따라) */
+  margin: 0px auto; /* 상하 간격 및 중앙 정렬 */
+  width: 90%; /* 부모 요소(card) 대비 너비 설정 */
+  text-align: left; /* 내부 텍스트 정렬 (필요 시 변경) */
+}
+
 /* 입력 필드 스타일 */
 .input-field {
-  width: 100%;
+  width: 400px;
   padding: 10px;
   margin: 10px 0;
   border: 2px solid #8a2be2; /* 보라색 테두리 */
-  border-radius: 5px;
+  border-radius: 10px;
   font-size: 1rem;
   color: #fff;
   background: rgba(255, 255, 255, 0.1); /* 투명한 흰색 배경 */
@@ -45,11 +54,11 @@ body {
 
 /* 버튼 스타일 */
 .btn {
-  width: 100%;
+  width: 400px;
   padding: 10px;
   margin: 10px 0;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   font-size: 1rem;
   color: white;
   background: linear-gradient(to right, #8a2be2, #6a0dad); /* 보라색 그라데이션 */
