@@ -63,7 +63,7 @@ def get_initial_message():
     return jsonify(response_messages)
 
 
-# 사용자 메시지 입력
+# 사용자 메시지 전송, 저장된 전체 메시지 반환
 @bp.route('/send_message/', methods=['POST'])
 def send_message():
     data = request.get_json()
@@ -76,3 +76,7 @@ def send_message():
     # response_messages = chat_service.get_initial_message()
     response_messages = chat_service.messages
     return jsonify(response_messages)
+
+#-----타로 리딩-----
+# 사용자 메시지 전송 시, 리스트에 저장된 메시지를 전달
+# @bp.route("/tarot_reading/", methods=['POST'])

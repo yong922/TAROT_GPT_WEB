@@ -21,6 +21,16 @@ class ChatService:
     # 사용자 메시지 추가
     def add_user_message(self, text):
         self.messages.append({"sender": "user", "text": text})
-        
-        # self.messages 반환
+        # self.messages 반환   -> user 입력 메시지로 수정
         return self.messages
+
+    # 챗봇 메시지 추가
+    def add_bot_message(self, text):
+        self.messages.append({"sender": "bot", "text": text})
+        # bot 응답 메시지 반환
+        return self.messages[-1]
+    
+    # 전체 메시지 반환
+    def get_all_messages(self):
+        return self.messages
+    
