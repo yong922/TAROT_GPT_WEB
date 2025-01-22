@@ -96,7 +96,6 @@
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
         }
-
         /* 챗봇 말풍선 꼬리 위치 */
         .message.bot::after {
             top: 50%;
@@ -104,7 +103,6 @@
             border-top: 10px solid #a1c4fd;
             transform: translateY(-50%);
         }
-
         /* 사용자 말풍선 꼬리 위치 */
         .message.user::after {
             top: 50%;
@@ -118,7 +116,6 @@
             display: flex;
             align-items: center;
         }
-
         .message-input-area input {
             flex-grow: 1;
             padding: 10px;
@@ -127,7 +124,6 @@
             border-radius: 5px;
             font-size: 16px;
         }
-
         .message-input-area button {
             padding: 10px 15px;
             background-color: #6a0dad;
@@ -136,7 +132,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         .message-input-area button:hover {
             background-color: #6a0dad;
         }
@@ -148,24 +143,7 @@
             margin-top: 10px;
         }
 
-        /* ========사이드바======== */
-        /* 사이드바 초기 상태 */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0; /* 기본적으로 닫혀 있음 */
-            height: 100%;
-            background-color: #1a1a1a;
-            color: white;
-            overflow-x: hidden;
-            transition: width 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-        }
-
+        /* ========사이드바======== */      
         /* 메뉴 아이콘 */
         #menu-icon {
             position: fixed;
@@ -180,21 +158,39 @@
             border-radius: 5px;
         }
 
+        /* 사이드바 초기 상태 */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0; /* 기본적으로 닫혀 있음 */
+            height: 100%;
+            background-color: #1a1a1a;
+            color: white;
+            overflow-x: hidden;
+            transition: width 0.3s ease; /* 부드럽게 열리고 닫히는 애니메이션 */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
         /* 사이드바 내부 */
-        .sidebar a {
+        #sidebar a {
             color: white;
             text-decoration: none;
             margin: 10px 0;
             font-size: 18px;
+            padding-left: 20px;
         }
-        .sidebar a:hover {
+        #sidebar a:hover {
             text-decoration: underline;
         }
 
-        /* 사이드바 활성화 */
-        .sidebar.active {
-            left: 0; /* 화면 안으로 슬라이드 */
+        /* 사이드바 활성화 (열릴 때 상태) */
+        #sidebar.active {
+            width: 250px; /* 열렸을 때의 너비 */
         }
+
     </style>
 </head>
 <body>
@@ -203,7 +199,7 @@
     <!-- 사이드바 -->
     <div id="sidebar" class="sidebar">
         <a href="#">대화 목록</a>
-        <a href="#">LOGOUT</a>
+        <a href="/">LOGOUT</a>
     </div>
 
     <!-- 채팅 -->
@@ -235,21 +231,19 @@
 
             // 사이드바 상태를 저장
             let isSidebarOpen = false;
-
-            // 사이드바 열기/닫기 함수
+            
+            // 사이드바 열고 닫기 함수
             function toggleSidebar() {
                 if (isSidebarOpen) {
-                    sidebar.style.width = "0";
-                    document.getElementById("chat-container").style.marginLeft = "0";
+                    sidebar.classList.remove("active"); // 닫기
                 } else {
-                    sidebar.style.width = "250px";
-                    document.getElementById("chat-container").style.marginLeft = "250px";
+                    sidebar.classList.add("active"); // 열기
                 }
                 isSidebarOpen = !isSidebarOpen; // 상태 반전
             }
+
+            // 메뉴 아이콘 클릭 -> 사이드바
             menuIcon.addEventListener("click", toggleSidebar);
-            // // 사이드바 아이콘 클릭 이벤트 연결
-            // document.getElementById("menu-icon").addEventListener("click", toggleSidebar);
             
 
             // 서버에서 초기 메시지 가져오기
