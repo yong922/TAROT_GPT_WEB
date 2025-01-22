@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- CSRF 토큰을 메타 태그에 포함 -->
-    <title>채팅</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- <link rel="stylesheet" href="/static/styles.css"> -->
+    <title>🔮TAROT NANA👵</title>
     <style>
         /* 배경 이미지 설정 */
         body {
@@ -33,12 +36,14 @@
             max-width: 800px;
             width: 100%;
             height: 80vh;
-            margin: 50px auto;
+            margin: 50px auto;  /* 기본: 화면 중앙에 위치 */
             background: rgba(0, 0, 0, 0.5);
             padding: 20px;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
+            transition: marin 0.3s ease;  /* 사이드바 열었을 때 부드럽게 이동 */
+            position: relative;
         }
 
         /* 채팅 화면 */
@@ -52,25 +57,66 @@
         /* 채팅 메시지 */
         .message {
             margin-bottom: 15px;
+            max-width: 70%;  /* 메시지 너비 제한 */
+            padding: 10px;
+            border-radius: 10px;
+            word-wrap: break-word;
+            position: relative;
         }
-
+        
+        /* 사용자 말풍선 */
         .message.user {
-            text-align: right;
-            color: #f1f1f1;
+            /* text-align: right;
+            color: #f1f1f1; */
+            /* background-color: #6a0dad; */
+            background-color: rgba(157, 84, 209, 0.8);
+            color: white;
+            margin-left: auto;  /* 오른쪽 정렬 */
+            border-radius: 15px 15px 0 15px;
+        }
+        
+        /* 챗봇 말풍선 */
+        .message.bot {
+            /* text-align: left;
+            color: #a1c4fd; */
+            /* background-color: #a1c4fd; */
+            background-color: rgba(58, 30, 78, 0.8);
+            /* color: #333; */
+            color: white;
+            border-radius: 15px 15px 15px 0;
         }
 
-        .message.bot {
-            text-align: left;
-            color: #a1c4fd;
+        /* 말풍선 꼬리 */
+        .message.user::after,
+        .message.bot::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+        }
+        /* 챗봇 말풍선 꼬리 위치 */
+        .message.bot::after {
+            top: 50%;
+            left: -10px;
+            border-top: 10px solid #a1c4fd;
+            transform: translateY(-50%);
+        }
+        /* 사용자 말풍선 꼬리 위치 */
+        .message.user::after {
+            top: 50%;
+            right: -10px;
+            border-top: 10px solid #6a0dad ;
+            transform: translateY(-50%);
         }
 
         /* 메시지 입력 필드 */
-        .input-area {
+        .message-input-area {
             display: flex;
             align-items: center;
         }
-
-        .input-area input {
+        .message-input-area input {
             flex-grow: 1;
             padding: 10px;
             margin-right: 10px;
@@ -78,8 +124,7 @@
             border-radius: 5px;
             font-size: 16px;
         }
-
-        .input-area button {
+        .message-input-area button {
             padding: 10px 15px;
             background-color: #6a0dad;
             color: white;
@@ -87,8 +132,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        .input-area button:hover {
+        .message-input-area button:hover {
             background-color: #6a0dad;
         }
 
@@ -98,16 +142,76 @@
             font-size: 1.2rem;
             margin-top: 10px;
         }
+
+        /* ========사이드바======== */      
+        /* 메뉴 아이콘 */
+        #menu-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1100;
+            color: white;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* 사이드바 초기 상태 */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0; /* 기본적으로 닫혀 있음 */
+            height: 100vh;  /* 화면 전체 높이 */
+            background-color: #1a1a1a;
+            color: white;
+            overflow-x: hidden;
+            transition: width 0.3s ease; /* 부드럽게 열리고 닫히는 애니메이션 */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            justify-content: space-between;  /* 상단/하단 항목 사이에 공간을 자동 분배 : LOGOUT 버튼 맨 하단에 위치 */
+        }
+        /* 사이드바 내부 */
+        #sidebar a {
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 18px;
+            padding-left: 20px;
+        }
+        #sidebar a:hover {
+            text-decoration: underline;
+        }
+
+        /* 사이드바 활성화 (열릴 때 상태) */
+        #sidebar.active {
+            width: 250px; /* 열렸을 때의 너비 */
+        }
+
     </style>
 </head>
 <body>
+    <!-- 사이드바 아이콘 -->
+    <div id="menu-icon" onclick="toggleSidebar()">☰</div>
+    <!-- 사이드바 -->
+    <div id="sidebar" class="sidebar">
+        <!-- <a href="#">대화 목록</a> -->
+        <h3>대화 목록</h3>
+        <a href="/">LOGOUT</a>
+    </div>
+
+    <!-- 채팅 -->
     <div class="chat-container">
         <div class="chat-box" id="chat-box">
             <!-- 채팅 메시지가 동적으로 여기에 표시됩니다. -->
         </div>
 
-        <div class="input-area">
-            <input type="text" id="message-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+        <div class="message-input-area">
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요...!" autocomplete="off">
             <button id="send-button">전송</button>
         </div>
 
@@ -115,35 +219,105 @@
             <span id="nickname"></span>
         </div>
     </div>
-
+    
     <script>
-        // CSRF 토큰을 가져오는 코드
-        var csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatBox = document.getElementById("chat-box");
+            // const messageInput = document.getElementById("message-input");
+            const messageInput = document.querySelector("#message-input");
+            const sendButton = document.getElementById("send-button");
+            const sidebar = document.getElementById("sidebar");
+            const menuIcon = document.getElementById("menu-icon");
 
-        // 전송 버튼 클릭 시 실행되는 코드
-        document.getElementById("send-button").addEventListener("click", function() {
-            var message = document.getElementById("message-input").value;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+
+            // 사이드바 상태를 저장
+            let isSidebarOpen = false;
             
-            if (message) {
-                // 메시지를 서버로 보내는 AJAX 요청
-                fetch('/send_message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrf_token  // CSRF 토큰을 헤더에 포함시킴
-                    },
-                    body: JSON.stringify({ message: message })
-                })
+            // 사이드바 열고 닫기 함수
+            function toggleSidebar() {
+                if (isSidebarOpen) {
+                    sidebar.classList.remove("active"); // 닫기
+                } else {
+                    sidebar.classList.add("active"); // 열기
+                }
+                isSidebarOpen = !isSidebarOpen; // 상태 반전
+            }
+
+            // 메뉴 아이콘 클릭 -> 사이드바
+            menuIcon.addEventListener("click", toggleSidebar);
+            
+
+            // 서버에서 초기 메시지 가져오기
+            fetch('/get_initial_message', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': csrfToken  // CSRF 토큰을 헤더에 추가가
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
-                    // 서버로부터 받은 데이터 처리 (예: 채팅 메시지 화면에 추가)
-                    console.log('Success:', data);
-                    document.getElementById("message-input").value = ''; // 입력창 초기화
+                    // 초기 메시지 렌더링
+                    data.forEach(message => {
+                        const messageDiv = document.createElement("div");
+                        messageDiv.className = `message ${message.sender}`;
+                        messageDiv.textContent = message.text;
+                        chatBox.appendChild(messageDiv);
+                    });
                 })
-                .catch(error => console.error('Error:', error));
-            }
-        });
-    </script>
+                .catch(error => console.error("초기 메시지를 가져오는 데 실패했습니다.", error));
 
+
+            // 전송 버튼 클릭 시 메시지 처리
+            function sendMessage() {
+                const userMessage = messageInput.value.trim();
+
+                if (userMessage) {
+                    // 사용자 메시지 화면에 추가
+                    const userMessageDiv = document.createElement("div");
+                    userMessageDiv.className = "message user";
+                    userMessageDiv.textContent = userMessage;
+                    chatBox.appendChild(userMessageDiv);
+
+                    // 서버에 사용자 메시지 전송
+                    fetch('/add_user_message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ text: userMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // 서버에서 반환한 모든 메시지로 화면 업데이트
+                            chatBox.innerHTML = '';  // 기존 메시지 제거
+                            data.forEach(message => {
+                                const messageDiv = document.createElement("div");
+                                messageDiv.className = `message ${message.sender}`;
+                                messageDiv.textContent = message.text;
+                                chatBox.appendChild(messageDiv);
+                            });
+
+                            // 메시지 입력 필드 초기화
+                            messageInput.value = '';
+                        })
+                        .catch(error => console.error("메시지를 서버로 전송하는 데 실패했습니다.", error));
+                }
+            }
+
+            // '전송' 버튼 클릭 시 메시지 전송
+            sendButton.addEventListener("click", sendMessage);
+
+            // 'Enter' 키를 눌렀을 때 메시지 전송
+            messageInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();  // 기본 Enter 동작(줄 바꿈)을 방지
+                    sendMessage();
+                }
+            });
+        });
+    </script>   
 </body>
 </html>
