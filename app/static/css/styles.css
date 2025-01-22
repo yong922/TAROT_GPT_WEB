@@ -71,3 +71,160 @@ footer {
   font-size: 0.9rem;
   text-shadow: 1px 1px 2px black;
 }
+
+
+/* =======================채팅 페이지======================= */
+/* 채팅 박스 */
+.chat-container {
+  max-width: 800px;
+  width: 100%;
+  height: 80vh;
+  margin: 50px auto;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 채팅 화면 */
+.chat-box {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+}
+
+/* 채팅 메시지 */
+.message {
+  margin-bottom: 15px;
+  max-width: 70%;  /* 메시지 너비 제한 */
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+/* 사용자 말풍선 */
+.message.user {
+  /* text-align: right;
+  color: #f1f1f1; */
+  /* background-color: #6a0dad; */
+  background-color: rgba(157, 84, 209, 0.8);
+  color: white;
+  margin-left: auto;  /* 오른쪽 정렬 */
+  border-radius: 15px 15px 0 15px;
+}
+
+/* 챗봇 말풍선 */
+.message.bot {
+  /* text-align: left;
+  color: #a1c4fd; */
+  /* background-color: #a1c4fd; */
+  background-color: rgba(58, 30, 78, 0.8);
+  /* color: #333; */
+  color: white;
+  border-radius: 15px 15px 15px 0;
+}
+
+/* 말풍선 꼬리 */
+.message.user::after,
+.message.bot::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+}
+
+/* 챗봇 말풍선 꼬리 위치 */
+.message.bot::after {
+  top: 50%;
+  left: -10px;
+  border-top: 10px solid #a1c4fd;
+  transform: translateY(-50%);
+}
+
+/* 사용자 말풍선 꼬리 위치 */
+.message.user::after {
+  top: 50%;
+  right: -10px;
+  border-top: 10px solid #6a0dad ;
+  transform: translateY(-50%);
+}
+
+/* 메시지 입력 필드 */
+.message-input-area {
+  display: flex;
+  align-items: center;
+}
+
+.message-input-area input {
+  flex-grow: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.message-input-area button {
+  padding: 10px 15px;
+  background-color: #6a0dad;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.message-input-area button:hover {
+  background-color: #6a0dad;
+}
+
+/* 하단에 표시되는 이름 */
+.username {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* 메뉴 아이콘 */
+#menu-icon {
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+  background: #333;
+  color: #fff;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+/* 사이드바 */
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.3s;
+  padding-top: 60px;
+}
+
+/* 사이드바 링크 스타일 */
+.sidebar a {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #fff;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  background-color: #575757;
+}
