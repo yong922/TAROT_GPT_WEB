@@ -41,6 +41,13 @@ def signup():
             flash(result['message'])
     return render_template('sign_up.html', form=form)
 
+@bp.route('/check_id/', methods=['POST'])
+def check_id():
+    id = request.json.get('user_id')
+
+    result = id_available(id=id)
+
+    return jsonify(result)
 
 @bp.route("/chat/", methods=['GET'])
 @login_required

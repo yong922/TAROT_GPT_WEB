@@ -5,6 +5,7 @@
     <form method="POST">
         {{ form.csrf_token }}
         
+        <!-- 입력 형태 검증 오류 -->
         {% if form.errors %}
         <div class="content-box">
             <div class="alert alert-danger" role="alert" >
@@ -30,10 +31,12 @@
 
         <!-- 입력 필드 -->
         <div>
-            {{ form.id(class_="input-field", placeholder="Input ID") }}
-            <button type="button" class="btn">Check</button>
-
+            {{ form.id(class_="input-field", placeholder="Input ID", id="user_id") }}
+            <button type="button" class="btn" id="check-button">Check</button>
         </div>
+
+        <!-- 메시지 표시 영역 -->
+        <div id="id-check-message" style="margin-top: 10px;"></div>
 
         <div>
             {{ form.pw(class_="input-field", placeholder="Input PW") }}
@@ -51,5 +54,9 @@
         <button type="submit" class="btn">Submit</button>
     </form>
 </div>
+
+<!-- JavaScript 연결 -->
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
 {% endblock %}
 
