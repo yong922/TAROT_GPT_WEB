@@ -164,7 +164,7 @@
             top: 0;
             left: 0;
             width: 0; /* 기본적으로 닫혀 있음 */
-            height: 100%;
+            height: 100vh;  /* 화면 전체 높이 */
             background-color: #1a1a1a;
             color: white;
             overflow-x: hidden;
@@ -173,6 +173,7 @@
             display: flex;
             flex-direction: column;
             padding: 20px 0;
+            justify-content: space-between;  /* 상단/하단 항목 사이에 공간을 자동 분배 : LOGOUT 버튼 맨 하단에 위치 */
         }
         /* 사이드바 내부 */
         #sidebar a {
@@ -198,7 +199,8 @@
     <div id="menu-icon" onclick="toggleSidebar()">☰</div>
     <!-- 사이드바 -->
     <div id="sidebar" class="sidebar">
-        <a href="#">대화 목록</a>
+        <!-- <a href="#">대화 목록</a> -->
+        <h3>대화 목록</h3>
         <a href="/">LOGOUT</a>
     </div>
 
@@ -221,7 +223,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const chatBox = document.getElementById("chat-box");
-            const messageInput = document.getElementById("message-input");
+            // const messageInput = document.getElementById("message-input");
+            const messageInput = document.querySelector("#message-input");
             const sendButton = document.getElementById("send-button");
             const sidebar = document.getElementById("sidebar");
             const menuIcon = document.getElementById("menu-icon");
