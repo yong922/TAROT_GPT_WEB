@@ -3,7 +3,7 @@ from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 import random
-import tarot_meaning
+from . import tarot_meaning
 import os
 from dotenv import load_dotenv
 

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- <link rel="stylesheet" href="/static/styles.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <title>🔮TAROT NANA👵</title>
     <style>
         /* 배경 이미지 설정 */
@@ -29,6 +29,19 @@
             100% {
                 background-position: 100% 100%;
             }
+        }
+
+        /* 페이지 제목 스타일 */
+        .page-title {
+            text-align: center;
+            margin-top: 20px; /* 제목과 상단의 여백 */
+        }
+
+        .page-title h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 50px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         /* 채팅 박스 */
@@ -69,7 +82,7 @@
             /* text-align: right;
             color: #f1f1f1; */
             /* background-color: #6a0dad; */
-            background-color: rgba(157, 84, 209, 0.8);
+            background-color: rgba(157, 84, 209, 1);
             color: white;
             margin-left: auto;  /* 오른쪽 정렬 */
             border-radius: 15px 15px 0 15px;
@@ -80,7 +93,7 @@
             /* text-align: left;
             color: #a1c4fd; */
             /* background-color: #a1c4fd; */
-            background-color: rgba(58, 30, 78, 0.8);
+            background-color: rgba(58, 30, 78, 1);
             /* color: #333; */
             color: white;
             border-radius: 15px 15px 15px 0;
@@ -100,14 +113,14 @@
         .message.bot::after {
             top: 50%;
             left: -10px;
-            border-top: 10px solid #a1c4fd;
+            border-top: 10px solid rgb(58, 30, 78, 1);
             transform: translateY(-50%);
         }
         /* 사용자 말풍선 꼬리 위치 */
         .message.user::after {
             top: 50%;
             right: -10px;
-            border-top: 10px solid #6a0dad ;
+            border-top: 10px solid rgba(157, 84, 209, 1) ;
             transform: translateY(-50%);
         }
 
@@ -135,6 +148,43 @@
         .message-input-area button:hover {
             background-color: #6a0dad;
         }
+
+        /* 토픽 */
+        .topic-selection {
+            text-align: center;  /* 가운데 정렬 */
+            margin-top: 20px;
+        }
+        .topic-label {
+            display: block;  /* 블록 요소로 만들기 */
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;  /* 버튼들 사이에 여백 */
+        }
+        .topic-selection {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+        }
+        .topic-btn {
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .topic-btn:hover {
+            background-color: #9d59ce;
+        }
+        .topic-btn:focus, .topic-btn:active {  /* 선택 */
+            outline: none;  /* 기본 outline 제거 */
+            border: 3px solid #ffffff;  /* 진한 하얀색 테두리 */
+        }
+
 
         /* 하단에 표시되는 이름 */
         .username {
@@ -195,6 +245,11 @@
     </style>
 </head>
 <body>
+    <!-- 페이지 상단 Tarot Nana -->
+    <div class="page-title">
+        <h1>🧙‍♀️Tarot Nana🔮</h1>
+    </div>
+
     <!-- 사이드바 아이콘 -->
     <div id="menu-icon" onclick="toggleSidebar()">☰</div>
     <!-- 사이드바 -->
@@ -206,9 +261,17 @@
 
     <!-- 채팅 -->
     <div class="chat-container">
+        <!-- 토픽 선택 -->
+        <div class="topic-selection" id="topic-selection">
+            <span class=""topic-label>TOPIC</span>
+            <button class="topic-btn" id="career-btn" onclick="selectTopic('취업운')">취업운</button>
+            <button class="topic-btn" id="health-btn" onclick="selectTopic('건강운')">건강운</button>
+            <button class="topic-btn" id="love-btn" onclick="selectTopic('연애운')">연애운</button>
+        </div>
         <div class="chat-box" id="chat-box">
             <!-- 채팅 메시지가 동적으로 여기에 표시됩니다. -->
         </div>
+
 
         <div class="message-input-area">
             <input type="text" id="message-input" placeholder="메시지를 입력하세요...!" autocomplete="off">
@@ -219,8 +282,8 @@
             <span id="nickname"></span>
         </div>
     </div>
-    
-    <script>
+    <script src="{{ url_for('static', filename='js/websocket_chat.js') }}"></script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", () => {
             const chatBox = document.getElementById("chat-box");
             // const messageInput = document.getElementById("message-input");
@@ -318,6 +381,6 @@
                 }
             });
         });
-    </script>   
+    </script>    -->
 </body>
 </html>
