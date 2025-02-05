@@ -1,7 +1,7 @@
-# from tarot_reading_service import TarotReader
-# import tarot_meaning
+from .tarot_reading_service import TarotReader
+# from . import tarot_meaning
 
-# tarot_reader = TarotReader()
+tarot_reader = TarotReader()
 
 class ChatService:
     def __init__(self):
@@ -9,7 +9,7 @@ class ChatService:
         self.messages = [
             {
                 "sender": "bot",
-                "text": "타로 할머니에게 어서 오렴.👵🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게.📜🪄"
+                "text": "타로 할머니에게 어서 오렴.👵🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게~📜🪄"
             }
         ]
         # (대화 흐름을 시간순으로 유지하기 위해 리스트로 저장)
@@ -34,3 +34,7 @@ class ChatService:
     def get_all_messages(self):
         return self.messages
     
+    # 챗봇 응답 생성
+    def process_message(self, user_message, topic=None):
+        bot_response = tarot_reader.process_query(topic=topic, text=user_message)  # 타로 해석 호출
+        return bot_response

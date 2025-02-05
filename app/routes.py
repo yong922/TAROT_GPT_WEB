@@ -2,11 +2,17 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash,
 from flask_login import login_user, login_required
 from app.services.chat_service import ChatService
 from app.services.user_service import authenticate_user, register_user, id_available
+from app.services.tarot_reading_service import TarotReader
 from app.forms import UserLoginForm, UserCreateForm
 from flask_login import login_user, current_user
+from flask_socketio import emit
+from app import socketio
 
 bp = Blueprint('main', __name__)
 chat_service = ChatService()
+tarot_reader = TarotReader()
+
+
 
 @bp.route('/', methods=['GET', 'POST'])
 def login():
@@ -71,20 +77,52 @@ def get_initial_message():
     return jsonify(response_messages)
 
 
-# 사용자 메시지 전송, 저장된 전체 메시지 반환
-@bp.route('/send_message/', methods=['POST'])
-def send_message():
-    data = request.get_json()
-    user_message = data.get('text', '')
+# # 사용자 메시지 전송, 저장된 전체 메시지 반환
+# @bp.route('/send_message/', methods=['POST'])
+# def send_message():
+#     data = request.get_json()
+#     user_message = data.get('text', '')
 
-    if user_message:
-        chat_service.add_user_message(user_message)
+#     if user_message:
+#         chat_service.add_user_message(user_message)
 
-    # 업데이트된 메시지 반환
-    # response_messages = chat_service.get_initial_message()
-    response_messages = chat_service.messages
-    return jsonify(response_messages)
+#     # 업데이트된 메시지 반환
+#     # response_messages = chat_service.get_initial_message()
+#     response_messages = chat_service.messages
+#     return jsonify(response_messages)
 
-#-----타로 리딩-----
-# 사용자 메시지 전송 시, 리스트에 저장된 메시지를 전달
-# @bp.route("/tarot_reading/", methods=['POST'])
+
+
+# ==============WebSocket================
+# login_required 빼놓음
+
+# WebSocket 연결 핸들러
+@socketio.on("connect")
+def handle_connect():
+    print(f"사용자 연결됨: {request.sid}")
+    
+    # 초기 메시지 가져오기
+    initial_messages = chat_service.get_initial_message()
+    # 기존 메시지를 클라이언트에게 전송
+    for msg in initial_messages:
+        emit("new_message", {"sender": msg["sender"], "message": msg["text"]})
+    # emit("new_message", {"sender": "bot", "message": "타로 할머니에게 어서 오렴.👵🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게.📜🪄"})
+
+# WebSocket 메시지 핸들러
+# '웹소켓 메시지'를 처리하는 부분(HTTP 요청 처리가 아님XXXX)
+@socketio.on("send_message")
+def handle_message(data):
+    user_message = data.get("text", "")
+    
+    # 사용자 메시지 추가
+    chat_service.add_user_message(user_message)
+
+    # 메시지 처리 및 봇 응답 생성
+    bot_response = chat_service.process_message(user_message)
+    
+    # 챗봇 응답 저장
+    chat_service.add_bot_message(bot_response)
+
+    # 사용자 메시지 및 봇 응답 전송
+    emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)  # 사용자가 보낸 메시지를 모든 클라이언트에게 전송 (사용자의 메시지 표시)
+    emit("new_message", {"sender": "bot", "message": bot_response}, broadcast=True)  # 봇의 응답 메시지를 모든 클라이언트에게 전송 (봇의 리딩 결과 표시
