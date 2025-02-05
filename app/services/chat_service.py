@@ -22,7 +22,7 @@ class ChatService:
     def add_user_message(self, text):
         self.messages.append({"sender": "user", "text": text})
         # self.messages 반환   -> user 입력 메시지로 수정
-        return self.messages
+        return
 
     # 챗봇 메시지 추가
     def add_bot_message(self, text):

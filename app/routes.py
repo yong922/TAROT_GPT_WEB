@@ -7,6 +7,7 @@ from app.forms import UserLoginForm, UserCreateForm
 from flask_login import login_user, current_user
 from flask_socketio import emit
 from app import socketio
+import asyncio  # 비동기 처리
 
 bp = Blueprint('main', __name__)
 chat_service = ChatService()
@@ -110,18 +111,35 @@ def handle_connect():
 # WebSocket 메시지 핸들러
 # '웹소켓 메시지'를 처리하는 부분(HTTP 요청 처리가 아님XXXX)
 @socketio.on("send_message")
-def handle_message(data):
+async def handle_message(data):
     user_message = data.get("text", "")
-    
+
     # 사용자 메시지 추가
     chat_service.add_user_message(user_message)
 
-    # 메시지 처리 및 봇 응답 생성
-    bot_response = chat_service.process_message(user_message)
+    # 사용자 메시지를 클라이언트에 즉시 표시
+    emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)
     
-    # 챗봇 응답 저장
+    async def stream_callback(chunk):
+        # 실시간 전송
+        emit("stream_message", {"chunk": chunk}, broadcast=True)
+        await asyncio.sleep(0)
+    
+    # TarotReader의 process_query 실행 -> 스트리밍 전송
+    bot_response = tarot_reader.process_query(user_message, stream_callback=stream_callback)
+    
+    # 최종 챗봇 응답 저장
     chat_service.add_bot_message(bot_response)
+    #===============수정전=================
+    # 사용자 메시지 추가
+    # chat_service.add_user_message(user_message)
 
-    # 사용자 메시지 및 봇 응답 전송
-    emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)  # 사용자가 보낸 메시지를 모든 클라이언트에게 전송 (사용자의 메시지 표시)
-    emit("new_message", {"sender": "bot", "message": bot_response}, broadcast=True)  # 봇의 응답 메시지를 모든 클라이언트에게 전송 (봇의 리딩 결과 표시
+    # # 메시지 처리 및 봇 응답 생성
+    # bot_response = chat_service.process_message(user_message)
+    
+    # # 챗봇 응답 저장
+    # chat_service.add_bot_message(bot_response)
+
+    # # 사용자 메시지 및 봇 응답 전송
+    # emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)  # 사용자가 보낸 메시지를 모든 클라이언트에게 전송 (사용자의 메시지 표시)
+    # emit("new_message", {"sender": "bot", "message": bot_response}, broadcast=True)  # 봇의 응답 메시지를 모든 클라이언트에게 전송 (봇의 리딩 결과 표시

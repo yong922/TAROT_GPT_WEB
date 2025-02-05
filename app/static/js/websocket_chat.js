@@ -43,16 +43,37 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener('click', selectTopic);
     });
 
+    // 메시지를 화면에 추가하는 함수
+    function addMessage(role, content) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${role}`;
+        messageDiv.textContent = content;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;  // 자동 스크롤
+        return messageDiv;  // 생성된 메시지 요소 반환
+    }
     
     // 서버에서 WebSocket을 통해 메시지를 받으면 화면에 표시
+    // "new_message" 이벤트 : user/bot의 메시지를 한번에 표시
     socket.on('new_message', function(data) {
-        const messageDiv = document.createElement("div");
-        messageDiv.className = `message ${data.sender}`;
-        messageDiv.textContent = `${data.message}`;
-        chatBox.appendChild(messageDiv);
+        const messageDiv = document.createElement("div");  // 새 div 요소 생성
+        messageDiv.className = `message ${data.sender}`;  // 'message user' 또는 'message bot' 클래스를 부여
+        messageDiv.textContent = `${data.message}`;  // 메시지 내용을 설정
+        chatBox.appendChild(messageDiv);  // 채팅 박스에 추가
 
         // 스크롤을 아래로 이동 (최신 메시지 보이도록)
         chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    // 서버에서 WebSocket을 통해 메시지를 스트리밍 방식으로 받음
+    socket.on('stream_message', function(data) {
+        let botMessageDiv = document.querySelector(".message.bot:last-child"); 
+
+        if (!botMessageDiv) {
+            botMessageDiv = addMessage("bot", "");  // 새로운 메시지 요소 추가
+        }
+
+        botMessageDiv.textContent += data.chunk;  // 받은 데이터 추가
     });
 
     // 메시지 전송 함수 (WebSocket 사용)
@@ -60,6 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const userMessage = messageInput.value.trim();
 
         if (userMessage && selectedTopic) {
+            // 사용자 메시지 화면에 추가
+            addMessage("user", userMessage);
+
             // WebSocket을 통해 서버로 메시지 전송
             socket.emit('send_message', { topic: selectedTopic, text: userMessage });
 
@@ -68,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             alert("토픽을 먼저 선택해주세요!");
         }
+        
     }
 
     // '전송' 버튼 클릭 시 메시지 전송

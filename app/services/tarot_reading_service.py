@@ -79,7 +79,7 @@ class TarotReader:
         self.memory = ConversationBufferMemory(  # 대화 저장
             memory_key="chat_history",
             input_key="text",
-            return_messages=True
+            return_messages=True,
         )
         
         # 프롬프트 템플릿 (system message)
@@ -120,7 +120,7 @@ class TarotReader:
         return {card: TAROT_CARD_MEANINGS[card] for card in cards}
 
     # 사용자 질문 처리, 타로 해석 결과 반환
-    def process_query(self, text, topic=None):
+    def process_query(self, text, topic=None, stream_callback=None):
         if not self.conversation_state["is_card_drawn"]:
             # First reading
             cards = self.draw_tarot_cards()
@@ -131,37 +131,29 @@ class TarotReader:
             self.conversation_state["card_keywords"] = self.card_keywords(cards)
             
             prompt_template = self.create_prompt(1)
-            chain = LLMChain(
-                llm=self.model,
-                prompt=prompt_template,
-                memory=self.memory,
-                verbose=False
-            )
-
-            response = chain.run(
-                text=text,
-                topic=topic,
-                chat_history=self.memory.chat_memory.messages,
-                cards=self.conversation_state["cards"],
-                card_keywords=self.conversation_state["card_keywords"]
-            )
-               
         else:
-            # Follow-up reading
+            # 추가 질문에 대한 리딩
             prompt_template = self.create_prompt(0)
-            chain = LLMChain(
-                llm=self.model,
-                prompt=prompt_template,
-                memory=self.memory,
-                verbose=False
-            )
+
+        # LLMChain
+        chain = LLMChain(
+            llm=self.model,
+            prompt=prompt_template,
+            memory=self.memory,
+            verbose=False
+        )
+
+        # 체인을 스트리밍 모드로 실행
+        response_text = ""
+        for chunk in chain.stream(
+                    text=text,
+                    topic=self.conversation_state["topic"] if self.conversation_state["is_card_drawn"] else topic,
+                    chat_history=self.memory.chat_memory.messages,
+                    cards=self.conversation_state["cards"],
+                    card_keywords=self.conversation_state["card_keywords"]
+        ):
+            if stream_callback:
+                stream_callback(chunk)
+            response_text += chunk
             
-            response = chain.run(
-                text=text,
-                topic=self.conversation_state["topic"],  # 저장된 topic 계속 사용
-                chat_history=self.memory.chat_memory.messages,
-                cards=self.conversation_state["cards"],
-                card_keywords=self.conversation_state["card_keywords"]
-            )
-            
-        return response
+        return response_text
