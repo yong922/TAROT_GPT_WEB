@@ -37,7 +37,6 @@
             <!-- 채팅 메시지가 동적으로 여기에 표시됩니다. -->
         </div>
 
-
         <div class="message-input-area">
             <input type="text" id="message-input" placeholder="메시지를 입력하세요...!" autocomplete="off">
             <button id="send-button">전송</button>
@@ -48,104 +47,5 @@
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/websocket_chat.js') }}"></script>
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const chatBox = document.getElementById("chat-box");
-            // const messageInput = document.getElementById("message-input");
-            const messageInput = document.querySelector("#message-input");
-            const sendButton = document.getElementById("send-button");
-            const sidebar = document.getElementById("sidebar");
-            const menuIcon = document.getElementById("menu-icon");
-
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    
-
-            // 사이드바 상태를 저장
-            let isSidebarOpen = false;
-            
-            // 사이드바 열고 닫기 함수
-            function toggleSidebar() {
-                if (isSidebarOpen) {
-                    sidebar.classList.remove("active"); // 닫기
-                } else {
-                    sidebar.classList.add("active"); // 열기
-                }
-                isSidebarOpen = !isSidebarOpen; // 상태 반전
-            }
-
-            // 메뉴 아이콘 클릭 -> 사이드바
-            menuIcon.addEventListener("click", toggleSidebar);
-            
-
-            // 서버에서 초기 메시지 가져오기
-            fetch('/get_initial_message', {
-                method: 'GET',
-                headers: {
-                    'X-CSRFToken': csrfToken  // CSRF 토큰을 헤더에 추가가
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // 초기 메시지 렌더링
-                    data.forEach(message => {
-                        const messageDiv = document.createElement("div");
-                        messageDiv.className = `message ${message.sender}`;
-                        messageDiv.textContent = message.text;
-                        chatBox.appendChild(messageDiv);
-                    });
-                })
-                .catch(error => console.error("초기 메시지를 가져오는 데 실패했습니다.", error));
-
-
-            // 전송 버튼 클릭 시 메시지 처리
-            function sendMessage() {
-                const userMessage = messageInput.value.trim();
-
-                if (userMessage) {
-                    // 사용자 메시지 화면에 추가
-                    const userMessageDiv = document.createElement("div");
-                    userMessageDiv.className = "message user";
-                    userMessageDiv.textContent = userMessage;
-                    chatBox.appendChild(userMessageDiv);
-
-                    // 서버에 사용자 메시지 전송
-                    fetch('/add_user_message', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        },
-                        body: JSON.stringify({ text: userMessage })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            // 서버에서 반환한 모든 메시지로 화면 업데이트
-                            chatBox.innerHTML = '';  // 기존 메시지 제거
-                            data.forEach(message => {
-                                const messageDiv = document.createElement("div");
-                                messageDiv.className = `message ${message.sender}`;
-                                messageDiv.textContent = message.text;
-                                chatBox.appendChild(messageDiv);
-                            });
-
-                            // 메시지 입력 필드 초기화
-                            messageInput.value = '';
-                        })
-                        .catch(error => console.error("메시지를 서버로 전송하는 데 실패했습니다.", error));
-                }
-            }
-
-            // '전송' 버튼 클릭 시 메시지 전송
-            sendButton.addEventListener("click", sendMessage);
-
-            // 'Enter' 키를 눌렀을 때 메시지 전송
-            messageInput.addEventListener("keydown", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();  // 기본 Enter 동작(줄 바꿈)을 방지
-                    sendMessage();
-                }
-            });
-        });
-    </script>    -->
 </body>
 </html>

@@ -184,7 +184,7 @@ footer {
 .message.user::after {
   top: 50%;
   right: -10px;
-  border-top: 10px solid #6a0dad ;
+  border-top: 10px solid rgba(157, 84, 209, 1) ;
   transform: translateY(-50%);
 }
 
