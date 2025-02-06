@@ -14,14 +14,13 @@ def pw_complexity_check(form, field):
     alpha = any(char.isalpha() for char in pw)
     special = any(char in "!@#$%^&*()-_=+[{]}|;:'\",<.>/?`~" for char in pw)
     if not (digit and alpha and special):
-        raise ValidationError('비밀번호는 영문, 숫자, 특수문자 조합으로 작성해주세요.')
+        raise ValidationError('Password must include letters, numbers, and special characters.')
 
 class UserCreateForm(FlaskForm):
     id = StringField('Input ID', 
         validators=[
             DataRequired(), 
             Length(min=3, max=20),
-            Regexp('^[a-zA-Z0-9]+$', message='아이디는 영문자와 숫자만 사용할 수 있습니다.')
         ]
     )
     pw = PasswordField('Input PW', 
@@ -29,7 +28,7 @@ class UserCreateForm(FlaskForm):
             DataRequired(), 
             Length(min=8, max=20),
             pw_complexity_check,
-            EqualTo('pw2', '비밀번호가 일치하지 않습니다')
+            EqualTo('pw2', 'The passwords do not match.')
         ]
     )
     pw2 = PasswordField('Confirm PW', validators=[DataRequired()])
