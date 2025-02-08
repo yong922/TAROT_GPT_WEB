@@ -11,7 +11,7 @@
             <div class="alert alert-danger" role="alert" >
                 {% for _, errors in form.errors.items() %}
                     {% for error in errors %}
-                        🚫 {{ error }}
+                        🚫 {{ error }}</br>
                     {% endfor %}
                 </ul>
                 {% endfor %}
