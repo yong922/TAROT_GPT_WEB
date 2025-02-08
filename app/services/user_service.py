@@ -23,7 +23,7 @@ def id_available(id):
         return {"success": False, "message": "This ID already exists."}
 
     # 사용가능한 ID
-    return {"success": True, "message": "The ID is available."}
+    return {"success": True, "message": "This ID is available."}
 
 def register_user(id, pw, nickname):
     result = id_available(id)

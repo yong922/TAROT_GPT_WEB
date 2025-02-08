@@ -34,7 +34,7 @@ body {
   border: none; /* 테두리 없음 */
   padding: 0px; /* 내부 여백 추가 (필요에 따라) */
   margin: 0px auto; /* 상하 간격 및 중앙 정렬 */
-  width: 90%; /* 부모 요소(card) 대비 너비 설정 */
+  width: 400px; /* 부모 요소(card) 대비 너비 설정 */
   text-align: left; /* 내부 텍스트 정렬 (필요 시 변경) */
 }
 
@@ -51,6 +51,27 @@ body {
   outline: none;
 }
 
+/* ID 입력 필드와 버튼을 감싸는 컨테이너 */
+.id-input-container {
+  display: flex;
+  width: 400px; /* 기존 입력 필드와 동일한 너비 */
+  margin: 10px auto; /* 중앙 정렬 */
+  margin-bottom: 0px;
+}
+
+/* ID 입력 필드 스타일 */
+.id-input-container .input-field {
+  flex: 85; 
+  width: auto; /* 기존 width 속성 제거 */
+  margin-right: 6px; /* 버튼과 간격 조정 */
+}
+
+/* 버튼 스타일 */
+.id-input-container .btn {
+  flex: 15; 
+  width: auto; /* 기존 width 속성 제거 */
+  white-space: nowrap; /* 버튼 텍스트가 줄바꿈되지 않도록 설정 */
+}
 
 /* 버튼 스타일 */
 .btn {
