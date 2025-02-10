@@ -248,9 +248,18 @@ footer {
 .topic-btn:hover {
   background-color: #9d59ce;
 }
-.topic-btn:focus, .topic-btn:active {  /* 선택 */
+.topic-btn:focus {  /* 선택 */
   outline: none;  /* 기본 outline 제거 */
   border: 3px solid #ffffff;  /* 진한 하얀색 테두리 */
+}
+/* 선택된 토픽 버튼 스타일 */
+.topic-btn.active {
+  border: 3px solid white;  /* 선택된 토픽 버튼 표시 */
+}
+/* 메시지 전송 후 비활성화된 상태 */
+.topic-btn.disabled {
+  pointer-events: none; /* 클릭 막기 */
+  opacity: 0.5; /* 흐리게 표시 */
 }
 
 

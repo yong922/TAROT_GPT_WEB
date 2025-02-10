@@ -5,24 +5,26 @@ tarot_reader = TarotReader()
 
 class ChatService:
     def __init__(self):
-        # 메시지 저장 리스트
-        self.messages = [
-            {
-                "sender": "bot",
-                "text": "타로 할머니에게 어서 오렴.👵🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게~📜🪄"
-            }
-        ]
-        # (대화 흐름을 시간순으로 유지하기 위해 리스트로 저장)
+        # 메시지 저장 리스트 (대화 흐름을 시간순으로 유지하기 위해 리스트로 저장)
+        self.messages = []
+        self.initialized = False
+        self.get_initial_message()
 
     # 대화 시작 시 '초기 메시지' 반환
     def get_initial_message(self):
+        if not self.initialized:
+            initial_msg = {
+                "sender": "bot",
+                "text": "타로 할머니에게 어서 오렴. 🧙‍♀️🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게.📜✨"
+            }
+            self.messages.append(initial_msg)
+            self.initialized = True
         return self.messages
 
     # 사용자 메시지 추가
     def add_user_message(self, text):
         self.messages.append({"sender": "user", "text": text})
         # self.messages 반환   -> user 입력 메시지로 수정
-        return
 
     # 챗봇 메시지 추가
     def add_bot_message(self, text):

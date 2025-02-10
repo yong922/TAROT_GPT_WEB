@@ -58,10 +58,10 @@ def check_id():
 
     return jsonify(result)
 
-@bp.route("/chat/", methods=['GET'])
-@login_required
-def tarot_chat():
-    return render_template("tarot_chat.html")
+# @bp.route("/chat/", methods=['GET'])
+# @login_required
+# def tarot_chat():
+#     return render_template("tarot_chat.html")
 
 #------
 # 채팅 페이지
@@ -102,11 +102,12 @@ def handle_connect():
     print(f"사용자 연결됨: {request.sid}")
     
     # 초기 메시지 가져오기
-    initial_messages = chat_service.get_initial_message()
+    if chat_service.initialized:
+        initial_messages = chat_service.get_initial_message()
+
     # 기존 메시지를 클라이언트에게 전송
     for msg in initial_messages:
         emit("new_message", {"sender": msg["sender"], "message": msg["text"]})
-    # emit("new_message", {"sender": "bot", "message": "타로 할머니에게 어서 오렴.👵🔮 궁금한 게 있다면 편하게 질문해보려무나. 타로카드 3장을 뽑아서 설명해줄게.📜🪄"})
 
 # WebSocket 메시지 핸들러
 # '웹소켓 메시지'를 처리하는 부분(HTTP 요청 처리가 아님XXXX)
@@ -117,7 +118,7 @@ async def handle_message(data):
     # 사용자 메시지 추가
     chat_service.add_user_message(user_message)
 
-    # 사용자 메시지를 클라이언트에 즉시 표시
+    # 사용자 메시지를 클라이언트에 즉시 표시(전송)
     emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)
     
     async def stream_callback(chunk):
