@@ -1,5 +1,6 @@
 import os
 import random
+import time
 from dotenv import load_dotenv
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
@@ -118,6 +119,10 @@ class TarotReader:
             str : 모델이 생성한 타로 해석 (stream)
         """
 
+        # 사용자 질문 저장
+        self.memory.chat_memory.add_user_message(text)
+
+        # 프롬프트 생성
         if not self.conversation_state["is_card_drawn"]:
             # 첫 번째 리딩: 카드 뽑기
             cards = self.draw_tarot_cards()
@@ -140,6 +145,8 @@ class TarotReader:
             StrOutputParser()  
         )
 
+        # 응답 streaming
+        full_response = ""
         for chunk in chain.stream(input={
             "text": text,
             "topic": topic,
@@ -148,3 +155,8 @@ class TarotReader:
             "card_keywords": self.conversation_state["card_keywords"]
         }):
             yield chunk   
+            time.sleep(0.1)
+            full_response += chunk
+
+        # 챗봇 응답 저장
+        self.memory.chat_memory.add_ai_message(full_response)

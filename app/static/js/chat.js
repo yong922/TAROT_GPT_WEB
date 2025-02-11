@@ -58,3 +58,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+async function selectTopic(topic) {
+    let chatBox = document.getElementById("chat-box");
+
+    // ✅ 버튼을 누르면 버튼 UI 삭제
+    document.querySelector(".topic-buttons").remove();
+
+    // ✅ 사용자가 선택한 주제를 화면에 추가
+    let userMessage = document.createElement("div");
+    userMessage.classList.add("message", "user");
+    userMessage.innerText = topic;
+    chatBox.appendChild(userMessage);
+
+    try {
+        // ✅ Flask 서버에 topic만 전달 (첫 번째 요청)
+        let response = await fetch("/chat/stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ topic: topic })  // ✅ topic만 보냄, message 없음
+        });
+
+        console.log(await response.text());  // ✅ "Topic stored" 응답 확인
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}

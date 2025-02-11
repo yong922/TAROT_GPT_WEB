@@ -156,10 +156,10 @@ footer {
   /* text-align: right;
   color: #f1f1f1; */
   /* background-color: #6a0dad; */
-  background-color: rgba(157, 84, 209, 1);
+  background-color: rgb(153, 77, 207);
   color: white;
   margin-left: auto;  /* 오른쪽 정렬 */
-  border-radius: 15px 15px 0 15px;
+  border-radius: 10px;
 }
 
 /* 챗봇 말풍선 */
@@ -167,10 +167,10 @@ footer {
   /* text-align: left;
   color: #a1c4fd; */
   /* background-color: #a1c4fd; */
-  background-color: rgba(58, 30, 78, 1);
+  background-color: rgb(66, 37, 86);
   /* color: #333; */
   color: white;
-  border-radius: 15px 15px 15px 0;
+  border-radius: 10px;
 }
 
 /* 말풍선 꼬리 */
@@ -183,20 +183,21 @@ footer {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
 }
-/* 챗봇 말풍선 꼬리 위치 */
-.message.bot::after {
-  top: 50%;
-  left: -10px;
-  border-top: 10px solid rgb(58, 30, 78, 1);
-  transform: translateY(-50%);
-}
 /* 사용자 말풍선 꼬리 위치 */
 .message.user::after {
   top: 50%;
   right: -10px;
-  border-top: 10px solid rgba(157, 84, 209, 1) ;
+  border-top: 10px solid rgb(153, 77, 207);
   transform: translateY(-50%);
 }
+/* 챗봇 말풍선 꼬리 위치 */
+.message.bot::after {
+  top: 50%;
+  left: -10px;
+  border-top: 10px solid rgb(66, 37, 86);
+  transform: translateY(-50%);
+}
+
 
 /* 메시지 입력 필드 */
 .message-input-area {
@@ -284,4 +285,29 @@ footer {
 /* 사이드바 활성화 (열릴 때 상태) */
 #sidebar.active {
   width: 250px; /* 열렸을 때의 너비 */
+}
+
+
+
+/* ======================================================== */
+
+.topic-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.topic-button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.topic-button:hover {
+  background-color: #0056b3;
 }
