@@ -1,5 +1,4 @@
-from .tarot_reading_service import TarotReader
-# from . import tarot_meaning
+from .tarot_service import TarotReader
 
 tarot_reader = TarotReader()
 

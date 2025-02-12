@@ -6,37 +6,34 @@
         {{ form.csrf_token }}
         
         <!-- 입력 형태 검증 오류 -->
-        {% if form.errors %}
         <div class="content-box">
+            {% if form.errors %}    
             <div class="alert alert-danger" role="alert" >
-                {% for field, errors in form.errors.items() %}
-                <strong>{{ form[field].label }}</strong>
-                <ul>
+                {% for _, errors in form.errors.items() %}
                     {% for error in errors %}
-                    <li>{{ error }}</li>
+                        🚫 {{ error }}</br>
                     {% endfor %}
                 </ul>
                 {% endfor %}
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <!-- flash 오류 -->
-        {% for message in get_flashed_messages() %}
-        <div class="alert alert-danger" role="alert">
-            {{ message }}
-        </div>
-        {% endfor %}
+            <!-- flash 오류 -->
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
 
+            <!-- 메시지 표시 영역 -->
+            <div id="id-check-message" style="margin-top: 10px;"></div>
+        </div>
 
         <!-- 입력 필드 -->
-        <div>
+        <div class="id-input-container">
             {{ form.id(class_="input-field", placeholder="Input ID", id="user_id") }}
             <button type="button" class="btn" id="check-button">Check</button>
         </div>
-
-        <!-- 메시지 표시 영역 -->
-        <div id="id-check-message" style="margin-top: 10px;"></div>
 
         <div>
             {{ form.pw(class_="input-field", placeholder="Input PW") }}
@@ -51,12 +48,12 @@
         </div>
 
         <!-- Submit 버튼 -->
-        <button type="submit" class="btn">Submit</button>
+        <button type="submit" class="btn" id="submit-button">Submit</button>
     </form>
 </div>
 
 <!-- JavaScript 연결 -->
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
 
 {% endblock %}
 

@@ -8,10 +8,8 @@ class Config:
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    DEBUG = True # 개발 단계에서만 True로 설정
     
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     # CSRF 보호 비활성화 (Postman 테스트용)
-    WTF_CSRF_ENABLED = False 
+    WTF_CSRF_ENABLED = False

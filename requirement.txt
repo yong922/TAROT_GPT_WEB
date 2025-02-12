@@ -2,7 +2,6 @@ ipykernel
 python-dotenv
 langchain
 langchain-openai
-langchain_community
 flask
 flask_login
 flask_sqlalchemy
