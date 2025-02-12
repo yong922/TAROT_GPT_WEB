@@ -12,3 +12,5 @@ flask_migrate
 flask-wtf
 wtforms
 Flask-SocketIO
+asyncio
+Flask[async]
