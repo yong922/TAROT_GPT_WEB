@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
     <title>🔮TAROT NANA👵</title>
 </head>
 <body>
@@ -46,6 +46,8 @@
             <span id="nickname"></span>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/websocket_chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/websocket_chat.js') }}"></script> -->
+    <!-- <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> -->
 </body>
 </html>

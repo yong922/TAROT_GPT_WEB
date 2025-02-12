@@ -125,6 +125,7 @@ footer {
 
 /* 채팅 화면 */
 .chat-box {
+  width: 100%;
   margin: 10px auto;
   flex-grow: 1;
   overflow-y: auto;
@@ -151,6 +152,10 @@ footer {
   color: white;
   margin-left: auto;  /* 오른쪽 정렬 */
   border-radius: 15px 15px 0 15px;
+  /* max-width : 60%;
+  padding: 10px 15px;
+  position: relative;
+  display: inline-block; */
 }
 /* 챗봇 말풍선 */
 .message.bot {
