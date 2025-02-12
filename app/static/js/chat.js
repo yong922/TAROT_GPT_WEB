@@ -15,6 +15,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // ✅ 챗봇 첫 메시지를 HTML로 직접 추가
+    function displayBotMessageWithButtons() {
+        chatBox.innerHTML += `
+            <div class="message bot">
+                <p>어서오렴. 오늘은 어떤 이야기를 해볼까?🧓🏻☕</p>
+                <div class="button-container">
+                    <button class="badge bg-primary">💸 재물</button>
+                    <button class="badge bg-secondary">📚 학업</button>
+                    <button class="badge bg-success">💪 건강</button>
+                    <button class="badge bg-danger">💗 애정</button>
+                    <button class="badge bg-warning text-dark">🌠 미래</button>
+                </div>
+            </div>
+        `;
+
+        // ✅ 추가된 버튼에 이벤트 리스너 연결
+        document.querySelectorAll(".chat-button").forEach(button => {
+            button.addEventListener("click", function () {
+                sendMessage(this.dataset.value);
+            });
+        });
+    }
+
+    displayBotMessageWithButtons();
+
+
     async function sendMessage() {
         let message = messageInput.value.trim();
         if (!message) return;
@@ -47,40 +73,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     let chunkText = decoder.decode(value, { stream: true });
                     fullResponse += chunkText;  // ✅ 기존 말풍선 안에 계속 추가
                     botMessage.innerHTML = fullResponse;  // ✅ 말풍선 내부 텍스트 갱신
-                    chatBox.scrollTop = chatBox.scrollHeight;
                     ({ done, value } = await reader.read());
                 }
+                // ✅ 사용자가 직접 스크롤하지 않고 있을 때만 자동 이동
+                if (!isUserScrolling) {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
             }
-
             await readChunks();
         } catch (error) {
             console.error("Error:", error);
         }
-    }
+    };
 });
 
-async function selectTopic(topic) {
-    let chatBox = document.getElementById("chat-box");
-
-    // ✅ 버튼을 누르면 버튼 UI 삭제
-    document.querySelector(".topic-buttons").remove();
-
-    // ✅ 사용자가 선택한 주제를 화면에 추가
-    let userMessage = document.createElement("div");
-    userMessage.classList.add("message", "user");
-    userMessage.innerText = topic;
-    chatBox.appendChild(userMessage);
-
-    try {
-        // ✅ Flask 서버에 topic만 전달 (첫 번째 요청)
-        let response = await fetch("/chat/stream", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ topic: topic })  // ✅ topic만 보냄, message 없음
-        });
-
-        console.log(await response.text());  // ✅ "Topic stored" 응답 확인
-    } catch (error) {
-        console.error("Error:", error);
-    }
-}
