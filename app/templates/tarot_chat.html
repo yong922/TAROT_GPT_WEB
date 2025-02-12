@@ -193,55 +193,7 @@
             margin-top: 10px;
         }
 
-        /* ========사이드바======== */      
-        /* 메뉴 아이콘 */
-        #menu-icon {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1100;
-            color: white;
-            background-color: #333;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        /* 사이드바 초기 상태 */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0; /* 기본적으로 닫혀 있음 */
-            height: 100vh;  /* 화면 전체 높이 */
-            background-color: #1a1a1a;
-            color: white;
-            overflow-x: hidden;
-            transition: width 0.3s ease; /* 부드럽게 열리고 닫히는 애니메이션 */
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-            justify-content: space-between;  /* 상단/하단 항목 사이에 공간을 자동 분배 : LOGOUT 버튼 맨 하단에 위치 */
-        }
-        /* 사이드바 내부 */
-        #sidebar a {
-            color: white;
-            text-decoration: none;
-            margin: 10px 0;
-            font-size: 18px;
-            padding-left: 20px;
-        }
-        #sidebar a:hover {
-            text-decoration: underline;
-        }
-
-        /* 사이드바 활성화 (열릴 때 상태) */
-        #sidebar.active {
-            width: 250px; /* 열렸을 때의 너비 */
-        }
-
+        
     </style>
 </head>
 <body>
