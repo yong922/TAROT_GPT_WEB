@@ -2,10 +2,13 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+from langchain.schema.runnable import RunnableSequence  
+from langchain.schema import StrOutputParser 
 import random
 from . import tarot_meaning
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
@@ -118,6 +121,54 @@ class TarotReader:
     # 뽑힌 카드의 의미 가져오기
     def card_keywords(self, cards):
         return {card: TAROT_CARD_MEANINGS[card] for card in cards}
+
+
+    # ========= http 스트리밍으로 타로 리딩 결과 반환 =========
+    async def generate_stream(self, text, topic=None):
+        # 처음 질문일 경우 카드 뽑기
+        try:
+            # self.memory.save_context({"input": text}, {"output": ""})
+            self.memory.chat_memory.add_user_message(text)
+
+            if not self.conversation_state["is_card_drawn"]:
+                cards = self.draw_tarot_cards()
+                self.conversation_state.update({
+                    "cards": ', '.join(cards),
+                    "topic": topic,
+                    "is_card_drawn": True,
+                    "card_keywords": self.card_keywords(cards)
+                })
+
+                prompt_template = self.create_prompt(1)
+            # 후속 질문일 경우
+            else:
+                prompt_template = self.create_prompt(0)
+
+            # chain = prompt_template | self.model
+            chain = RunnableSequence(
+                prompt_template, 
+                self.model,      
+                StrOutputParser()  
+            )
+            
+            bot_message =""  # bot 메시지 저장
+            async for chunk in chain.stream({
+                "text": text,
+                "topic": self.conversation_state["topic"],
+                "chat_history": self.memory.chat_memory.messages,
+                "cards": self.conversation_state["cards"],
+                "card_keywords": self.conversation_state["card_keywords"]
+            }):
+                yield chunk  # yield : 하나씩 부분적으로 반환
+                # await asyncio.sleep(0.1)  # 네트워크 부하 방지
+                time.sleep(0.1)
+                bot_message += chunk
+
+                # self.memory.save_context({"input": ""}, {"output": bot_message})
+                self.memory.chat_memory.add_ai_message(text)
+
+        except Exception as e:
+            yield f"오류 발생: {str(e)}"
 
     # 사용자 질문 처리, 타로 해석 결과 반환
     def process_query(self, text, topic=None, stream_callback=None):

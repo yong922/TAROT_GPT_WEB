@@ -1,13 +1,14 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify, session
+from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify, session, Response, stream_with_context
 from flask_login import login_user, login_required
 from app.services.chat_service import ChatService
 from app.services.user_service import authenticate_user, register_user
 from app.services.tarot_reading_service import TarotReader
 from app.forms import UserLoginForm, UserCreateForm
 from flask_login import login_user, current_user
-from flask_socketio import emit
-from app import socketio
+# from flask_socketio import emit
+# from app import socketio
 import asyncio  # 비동기 처리
+import time
 
 bp = Blueprint('main', __name__)
 chat_service = ChatService()
@@ -69,7 +70,51 @@ def check_id():
 def chat_page():
     return render_template("tarot_chat.html")
 
+@bp.route("/chat_stream", methods=['POST'])
+def chat_stream():
+    try:
+        data = request.get_json()
+        print("📌 받은 데이터:", data)
+        user_message = data.get('text', '').strip()
+        topic = data.get('topic', None)
 
+        # # 타로 리딩 스트리밍 생성
+        # def stream_response():
+        #     try:
+        #         full_response = ""
+        #         for chunk in tarot_reader.generate_stream(text=user_message, topic=topic):
+        #             yield chunk
+        #             time.sleep(0.1)
+        #             full_response += chunk
+        #         # # 비동기 함수 실행을 위한 새 이벤트 루프 생성
+        #         # loop = asyncio.new_event_loop()
+        #         # asyncio.set_event_loop(loop)
+
+        #         # async def generate():
+        #         #     async for chunk in tarot_reader.generate_stream(text=user_message, topic=topic):
+        #         #         yield chunk  # 스트리밍으로 전송
+        #         #         # await asyncio.sleep(0.1)  # 네트워크 부하 방지
+        #         #         time.sleep(0.1)
+        #         #         full_response += chunk
+        #         # # 비동기 제너레이터 실행
+        #         # yield from asyncio.run(generate())
+            
+        #     except Exception as e:
+        #         yield f"오류 발생: {str(e)}"
+        # return Response(stream_response(), content_type="text/event-stream")
+        def generate():
+            try:
+                for chunk in tarot_reader.generate_stream(text=user_message, topic=topic):
+                    yield chunk
+                    time.sleep(0.1)
+            except Exception as e:
+                yield f"오류 발생: {str(e)}"
+        return Response(generate(), content_type="text/plain; charset=utf-8")
+    
+    except Exception as e:
+        print(f"❌ 에러 발생: {str(e)}")  # 🔹 에러 로그 추가
+        return jsonify({"error": "서버 내부 오류 발생"}), 500
+    
 # 초기 메시지(봇 인사말) 반환
 @bp.route('/get_initial_message/', methods=['GET'])
 def get_initial_message():
@@ -96,41 +141,41 @@ def get_initial_message():
 # ==============WebSocket================
 # login_required 빼놓음
 
-# WebSocket 연결 핸들러
-@socketio.on("connect")
-def handle_connect():
-    print(f"사용자 연결됨: {request.sid}")
+# # WebSocket 연결 핸들러
+# @socketio.on("connect")
+# def handle_connect():
+#     print(f"사용자 연결됨: {request.sid}")
     
-    # 초기 메시지 가져오기
-    if chat_service.initialized:
-        initial_messages = chat_service.get_initial_message()
+#     # 초기 메시지 가져오기
+#     if chat_service.initialized:
+#         initial_messages = chat_service.get_initial_message()
 
-    # 기존 메시지를 클라이언트에게 전송
-    for msg in initial_messages:
-        emit("new_message", {"sender": msg["sender"], "message": msg["text"]})
+#     # 기존 메시지를 클라이언트에게 전송
+#     for msg in initial_messages:
+#         emit("new_message", {"sender": msg["sender"], "message": msg["text"]})
 
-# WebSocket 메시지 핸들러
-# '웹소켓 메시지'를 처리하는 부분(HTTP 요청 처리가 아님XXXX)
-@socketio.on("send_message")
-async def handle_message(data):
-    user_message = data.get("text", "")
+# # WebSocket 메시지 핸들러
+# # '웹소켓 메시지'를 처리하는 부분(HTTP 요청 처리가 아님XXXX)
+# @socketio.on("send_message")
+# async def handle_message(data):
+#     user_message = data.get("text", "")
 
-    # 사용자 메시지 추가
-    chat_service.add_user_message(user_message)
+#     # 사용자 메시지 추가
+#     chat_service.add_user_message(user_message)
 
-    # 사용자 메시지를 클라이언트에 즉시 표시(전송)
-    emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)
+#     # 사용자 메시지를 클라이언트에 즉시 표시(전송)
+#     emit("new_message", {"sender": "user", "message": user_message}, broadcast=True)
     
-    async def stream_callback(chunk):
-        # 실시간 전송
-        emit("stream_message", {"chunk": chunk}, broadcast=True)
-        await asyncio.sleep(0)
+#     async def stream_callback(chunk):
+#         # 실시간 전송
+#         emit("stream_message", {"chunk": chunk}, broadcast=True)
+#         await asyncio.sleep(0)
     
-    # TarotReader의 process_query 실행 -> 스트리밍 전송
-    bot_response = tarot_reader.process_query(user_message, stream_callback=stream_callback)
+#     # TarotReader의 process_query 실행 -> 스트리밍 전송
+#     bot_response = tarot_reader.process_query(user_message, stream_callback=stream_callback)
     
-    # 최종 챗봇 응답 저장
-    chat_service.add_bot_message(bot_response)
+#     # 최종 챗봇 응답 저장
+#     chat_service.add_bot_message(bot_response)
     #===============수정전=================
     # 사용자 메시지 추가
     # chat_service.add_user_message(user_message)
