@@ -3,9 +3,7 @@ from app.models import db, User
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
-# from flask_socketio import SocketIO
 
-# socketio = SocketIO()
 login_manager = LoginManager()
 migrate = Migrate()
 csrf = CSRFProtect()
@@ -19,7 +17,6 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
-    # socketio.init_app(app)
 
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  
@@ -31,6 +28,5 @@ def create_app():
     from app.routes import auth_bp, chat_bp
     app.register_blueprint(auth_bp, url_prefix='/')
     app.register_blueprint(chat_bp, url_prefix='/chat')
-    # app.register_blueprint(ws_bp, url_prefix='/ws')
 
     return app
