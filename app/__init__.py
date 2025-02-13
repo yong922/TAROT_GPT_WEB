@@ -3,10 +3,13 @@ from app.models import db, User
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
+from flask_socketio import SocketIO
 
+socketio = SocketIO()
 login_manager = LoginManager()
 migrate = Migrate()
 csrf = CSRFProtect()
+
 
 def create_app():
     app = Flask(__name__)
