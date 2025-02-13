@@ -289,60 +289,127 @@ footer {
 }
 
 
-/* ========사이드바======== */      
-/* 메뉴 아이콘 */
-#menu-icon {
+/* ================ 사이드바 ================ */      
+.sidebar {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 1100;
-  color: white;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
   background-color: #333;
-  padding: 10px;
-  border-radius: 5px;
+  color: white;
+  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
-/* 사이드바 초기 상태 */
-#sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0; /* 기본적으로 닫혀 있음 */
-  height: 100vh;  /* 화면 전체 높이 */
-  background-color: #1a1a1a;
-  color: white;
-  overflow-x: hidden;
-  transition: width 0.3s ease; /* 부드럽게 열리고 닫히는 애니메이션 */
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 0;
-  justify-content: space-between;  /* 상단/하단 항목 사이에 공간을 자동 분배 : LOGOUT 버튼 맨 하단에 위치 */
+/* 열린 상태 */
+.sidebar.open {
+  transform: translateX(0);
 }
-/* 사이드바 내부 */
-#sidebar a {
+/* 닫힌 상태 */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* 닫기 버튼 */
+.close-btn {
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  width: auto;
+  text-align: left;
+}
+.close-btn:hover {
+  background: #555;
+}
+
+/* 사이드바 열기 버튼 */
+.sidebar-btn {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+.sidebar-btn:hover{
+  background: #555;
+}
+
+/* 대화 목록 */
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+/* 대화 목록 - 대화 아이템 */
+.chat-item {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.chat-item:hover {
+  border-radius: 5px;
+  background: #555;
+}
+
+/* 대화 아이콘과 제목 */
+.chat-icon {
+  margin-right: 10px;
+}
+
+/* 사용자 정보 컨테이너 (로그아웃 버튼 포함) */
+.user-info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 40px); /* 좌우 간격 확보 */
+}
+/* 사용자 아이콘 */
+.user-icon {
+  margin-right: 1px; /* 아이콘과 사용자 이름 간격 조정 */
+  font-size: 20px; /* 아이콘 크기 */
+  color: white;
+}
+/* 사용자 정보 */
+.user-info {
+  margin-right: 5px;
+  font-weight: bold;
+  color: white;
+}
+/* 로그아웃 버튼 스타일 */
+.logout-btn {
   color: white;
   text-decoration: none;
-  margin: 10px 0;
-  font-size: 18px;
-  padding-left: 20px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background 0.3s;
 }
-#sidebar a:hover {
-  text-decoration: underline;
-}
-
-/* 사이드바 활성화 (열릴 때 상태) */
-#sidebar.active {
-  width: 250px; /* 열렸을 때의 너비 */
+.logout-btn:hover {
+  background: #555;
 }
 
 
+/* ================ 토픽 ================ */
 
-/* ======================================================== */
-
-.topic-buttons {
+/* .topic-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -360,9 +427,7 @@ footer {
 }
 .sidebar a:hover {
   text-decoration: underline;
-  /* background-color: #575757; */
 }
-/* 사이드바 활성화 (열릴 때 상태) */
 #sidebar.active {
-  width: 250px; /* 열렸을 때의 너비 */
-}
+  width: 250px;
+} */
