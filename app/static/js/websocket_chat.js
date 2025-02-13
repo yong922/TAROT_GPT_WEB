@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const sendButton = document.getElementById("send-button");
     const sidebar = document.getElementById("sidebar");
     const menuIcon = document.getElementById("menu-icon");
+    const topicButtons = document.querySelectorAll('.topic-btn');
+
 
     // WebSocket 자동 연결 방지
     const socket = io("http://localhost:5000", { autoConnect: false });
@@ -69,9 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // '전송' 버튼 클릭 시 메시지 전송
-    sendButton.addEventListener("click", sendMessage);
+    // topic 버튼 클릭 이벤트 리스너
+    topicButtons.forEach(btn => btn.addEventListener('click', selectTopic));
 
+    // '전송' 버튼 클릭 이벤트 리스너
+    sendButton.addEventListener("click", sendMessage);
     // 'Enter' 키를 눌렀을 때 메시지 전송
     messageInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
