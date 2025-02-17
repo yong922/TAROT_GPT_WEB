@@ -1,0 +1,28 @@
+<div id="sidebar" class="sidebar open">
+    <button id="toggle-sidebar" class="close-btn">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <ul class="chat-list">
+        {% for chat in chat_list %}
+        <li class="chat-item">
+            {% set chat_icon = chat_icon_list | selectattr('topic', 'equalto', chat.topic) | first %}
+            <span class="chat-icon"><i class="fa-solid {{ chat_icon.icon }}"></i></span>
+            <span class="chat-title">{{ chat.title }}</span>
+        </li>
+        {% else %}
+        <li>채팅 목록이 없습니다.</li>
+        {% endfor %}
+    </ul>
+    <div class="user-info-container">
+        <span class="user-info">
+            <i class="fa-solid fa-circle-user"></i>
+                {{ username }}님</span>
+        <a href="/" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"> LOGOUT</i>
+        </a>
+    </div>
+</div>
+<button id="open-sidebar" class="sidebar-btn">
+    <i class="fa-solid fa-bars"></i>
+</button>
+<script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>

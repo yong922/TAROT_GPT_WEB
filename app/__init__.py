@@ -8,12 +8,12 @@ login_manager = LoginManager()
 migrate = Migrate()
 csrf = CSRFProtect()
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object('app.config.Config')
-    
     csrf.init_app(app)
-
+    
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -27,5 +27,5 @@ def create_app():
     from app.routes import auth_bp, chat_bp
     app.register_blueprint(auth_bp, url_prefix='/')
     app.register_blueprint(chat_bp, url_prefix='/chat')
-    
+
     return app
