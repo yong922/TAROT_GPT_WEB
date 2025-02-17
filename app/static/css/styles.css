@@ -152,7 +152,7 @@ footer {
 /* 채팅 메시지 */
 .message {
   margin-bottom: 15px;
-  max-width: 70%;  /* 메시지 너비 제한 */
+  max-width: 70%;  
   padding: 10px;
   border-radius: 10px;
   word-wrap: break-word;
@@ -161,27 +161,24 @@ footer {
 
 /* 사용자 말풍선 */
 .message.user {
-  /* text-align: right;
-  color: #f1f1f1; */
-  /* background-color: #6a0dad; */
   background-color: rgb(153, 77, 207);
   color: white;
-  margin-left: auto;  /* 오른쪽 정렬 */
+  margin-left: auto;  
   border-radius: 10px;
 }
 
 /* 챗봇 말풍선 */
 .message.bot {
-  /* text-align: left;
-  color: #a1c4fd; */
-  /* background-color: #a1c4fd; */
-  background-color: rgb(66, 37, 86);
-  /* color: #333; */
+  background-color: rgba(109, 54, 146, 0.61);
   color: white;
   border-radius: 10px;
 }
 
-/* 말풍선 꼬리 */
+.message.bot p {
+  margin-bottom: 1px;
+}
+
+/* 말풍선 꼬리
 .message.user::after,
 .message.bot::after {
   content: "";
@@ -192,19 +189,19 @@ footer {
   border-right: 10px solid transparent;
 }
 /* 사용자 말풍선 꼬리 위치 */
-.message.user::after {
+/* .message.user::after {
   top: 50%;
   right: -10px;
   border-top: 10px solid rgb(153, 77, 207);
   transform: translateY(-50%);
 }
 /* 챗봇 말풍선 꼬리 위치 */
-.message.bot::after {
+/* .message.bot::after {
   top: 50%;
   left: -10px;
   border-top: 10px solid rgb(66, 37, 86);
   transform: translateY(-50%);
-}
+} * */
 
 
 /* 메시지 입력 필드 */
