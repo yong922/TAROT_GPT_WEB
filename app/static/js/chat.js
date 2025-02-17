@@ -67,8 +67,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 🟢 버튼 클릭 시 실행되는 함수
     async function handleButtonClick(topic) {
+        if (selectedTopic) return;
+
         selectedTopic = topic;
         await addMessageToChatBox(`좋아, ${selectedTopic}에 대해 이야기 해보자. 뭐가 궁금하니?`);
+
+        // ✅ 버튼 비활성화 처리
+        document.querySelectorAll(".chat-button").forEach(button => {
+            button.disabled = true;
+        });
     }
 
     // 🟢 초기 메시지 표시 (stream 방식)
