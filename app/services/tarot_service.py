@@ -8,6 +8,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema.runnable import RunnableSequence  
 from langchain.schema import StrOutputParser 
 from app.data import tarot_meaning, templates
+from app.services.history_service import create_chat_history, update_chat_history
 
 
 # 환경변수 로드
@@ -39,7 +40,6 @@ class TarotReader:
         self.conversation_state = {
             "is_card_drawn": False, # 카드를 뽑았는지 bool
             "cards": None,          # 뽑힌 카드 list
-            "topic": None,          # 사용자가 선택한 주제 string
             "card_keywords": None,  # 뽑힌 카드의 의미 dict
         }
         
@@ -105,7 +105,7 @@ class TarotReader:
         return {card: TAROT_CARD_MEANINGS[card] for card in cards}
 
 
-    def process_query(self, text, topic=None):
+    def process_query(self, text, user_id, topic=None):
         """
         ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
 
@@ -128,12 +128,14 @@ class TarotReader:
             cards = self.draw_tarot_cards()
             self.conversation_state.update({
                 "cards": ', '.join(cards),
-                "topic": topic,
                 "is_card_drawn": True,
                 "card_keywords": self.card_keywords(cards),
             })
             
             prompt_template = self.create_prompt(is_first_reading=True)
+
+            self.chat_id = create_chat_history(user_id, topic, self.memory)
+
         else:
             # 후속 질문
             prompt_template = self.create_prompt(is_first_reading=False)
@@ -160,3 +162,10 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
+
+        # 대화기록 DB 업데이트
+        update_chat_history(self.chat_id, self.memory)
+
+
+
+        
