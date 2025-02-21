@@ -8,7 +8,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema.runnable import RunnableSequence  
 from langchain.schema import StrOutputParser 
 from app.data import tarot_meaning, templates
-from app.services.history_service import create_chat_history, update_chat_history
 
 
 # 환경변수 로드
@@ -134,8 +133,6 @@ class TarotReader:
             
             prompt_template = self.create_prompt(is_first_reading=True)
 
-            self.chat_id = create_chat_history(user_id, topic, self.memory)
-
         else:
             # 후속 질문
             prompt_template = self.create_prompt(is_first_reading=False)
@@ -162,9 +159,6 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
-
-        # 대화기록 DB 업데이트
-        update_chat_history(self.chat_id, self.memory)
 
 
 
