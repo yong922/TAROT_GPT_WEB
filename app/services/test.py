@@ -1,11 +1,26 @@
-import sys
-import time  # ✅ 시간 측정을 위해 추가
-from app.services.tarot_service import TarotReader
+from app import create_app  # Flask 앱을 불러옴
+from app.models import ChatHistory, db
 
-tarot_bot = TarotReader()
-for response in tarot_bot.process_query("안녕"):
-    print(response, end="")  # 첫 번째 질문
+app = create_app()  # Flask 애플리케이션 인스턴스 생성
 
-for response in tarot_bot.process_query("내가 방금 뭐라고 했지?"):
-    print(response, end="")  # 챗봇이 기억하는지 확인
+def test_save_chat_history():
+    """DB에 JSON 데이터가 정상적으로 저장되는지 테스트"""
+    with app.app_context():  # ✅ Flask 애플리케이션 컨텍스트 활성화
+        test_chat = ChatHistory(
+            user_id="test_id",
+            topic="미래운",
+            message=[
+                {"role": "user", "text": "올해 취직이 가능할까?"},
+                {"role": "bot", "text": "네, 긍정적인 변화가 예상됩니다!"}
+            ]
+        )
 
+        db.session.add(test_chat)
+        db.session.commit()
+
+        print("✅ 대화 저장 완료!")
+        print(f"Chat ID: {test_chat.chat_id}")
+
+# 실행
+if __name__ == "__main__":
+    test_save_chat_history()

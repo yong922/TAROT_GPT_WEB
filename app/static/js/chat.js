@@ -67,13 +67,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 🟢 버튼 클릭 시 실행되는 함수
     async function handleButtonClick(topic) {
+        if (selectedTopic) return;
+
         selectedTopic = topic;
         await addMessageToChatBox(`좋아, ${selectedTopic}에 대해 이야기 해보자. 뭐가 궁금하니?`);
+
+        // ✅ 버튼 비활성화 처리
+        document.querySelectorAll(".chat-button").forEach(button => {
+            button.disabled = true;
+        });
     }
 
     // 🟢 초기 메시지 표시 (stream 방식)
     async function displayBotMessageWithButtons() {
-        await addMessageToChatBox("어서오렴. 오늘은 어떤 이야기를 나눠볼까?🧓🏻☕", 50, true);
+        await addMessageToChatBox("어서오너라. 오늘은 어떤 이야기를 나눠볼까? 아래에서 선택해보렴.🧓🏻☕", 50, true);
     }
 
     // 실행

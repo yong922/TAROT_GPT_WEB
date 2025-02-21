@@ -1,53 +1,15 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-
-    <title>🔮TAROT NANA👵</title>
-</head>
-<body>
-    <!-- 페이지 상단 Tarot Nana -->
-    <div class="page-title">
-        <h1>🧙‍♀️Tarot Nana🔮</h1>
+{% extends 'base.html' %}
+{% block content %}
+<!--- 사이드바 포함 -->
+{% include 'sidebar.html' %}
+<!-- 채팅 -->
+<div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <div class="message-input-area">
+        <input type="text" id="message-input" placeholder="Input Massages..." >
+        <button id="send-button">Send</button>
     </div>
-
-    <!-- 사이드바 아이콘 -->
-    <div id="menu-icon" onclick="toggleSidebar()">☰</div>
-    <!-- 사이드바 -->
-    <div id="sidebar" class="sidebar">
-        <!-- <a href="#">대화 목록</a> -->
-        <h3>대화 목록</h3>
-        <a href="/">LOGOUT</a>
-    </div>
-
-    <!-- 채팅 -->
-    <div class="chat-container">
-        <!-- 토픽 선택 -->
-        <div class="topic-selection" id="topic-selection">
-            <span class=""topic-label>TOPIC</span>
-            <button class="topic-btn" id="career-btn" onclick="selectTopic('취업운')">취업운</button>
-            <button class="topic-btn" id="health-btn" onclick="selectTopic('건강운')">건강운</button>
-            <button class="topic-btn" id="love-btn" onclick="selectTopic('연애운')">연애운</button>
-        </div>
-        <div class="chat-box" id="chat-box">
-            <!-- 채팅 메시지가 동적으로 여기에 표시됩니다. -->
-        </div>
-
-        <div class="message-input-area">
-            <input type="text" id="message-input" placeholder="메시지를 입력하세요...!" autocomplete="off">
-            <button id="send-button">전송</button>
-        </div>
-
-        <div class="username">
-            <span id="nickname"></span>
-        </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-    <!-- <script src="{{ url_for('static', filename='js/websocket_chat.js') }}"></script> -->
-    <!-- <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> -->
-</body>
-</html>
+</div>
+<!-- JavaScript 연결 -->
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

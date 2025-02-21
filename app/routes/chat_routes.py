@@ -1,5 +1,5 @@
 from flask import render_template, jsonify, Response, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.services.tarot_service import TarotReader
 from . import chat_bp
 
@@ -15,8 +15,10 @@ def chat():
     if not user_message:
         return Response("No message received", status=400)
 
+    user_id = current_user.id
+
     return Response(
-        tarot_reader.process_query(user_message, topic),
+        tarot_reader.process_query(user_message, topic, user_id),
         content_type="text/plain"
     )
 
@@ -37,4 +39,4 @@ def tarot_chat():
         {'topic': '건강운', 'title': '건강운대화4'},
         ]
     username = 'qwer'
-    return render_template("tarot_chat copy 2.html", chat_list=chat_list, username=username, chat_icon_list=chat_icon_list)
+    return render_template("tarot_chat.html", chat_list=chat_list, username=username, chat_icon_list=chat_icon_list)

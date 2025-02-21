@@ -5,8 +5,8 @@
     <form method="POST">
         {{ form.csrf_token }}
         
-        <!-- 입력 형태 검증 오류 -->
         <div class="content-box">
+            <!-- 입력 형태 검증 오류 -->
             {% if form.errors %}    
             <div class="alert alert-danger" role="alert" >
                 {% for _, errors in form.errors.items() %}
@@ -51,9 +51,6 @@
         <button type="submit" class="custom-btn" id="submit-button">Submit</button>
     </form>
 </div>
-
-<!-- JavaScript 연결 -->
 <script src="{{ url_for('static', filename='js/user.js') }}"></script>
-
 {% endblock %}
 

@@ -39,7 +39,6 @@ class TarotReader:
         self.conversation_state = {
             "is_card_drawn": False, # 카드를 뽑았는지 bool
             "cards": None,          # 뽑힌 카드 list
-            "topic": None,          # 사용자가 선택한 주제 string
             "card_keywords": None,  # 뽑힌 카드의 의미 dict
         }
         
@@ -105,7 +104,7 @@ class TarotReader:
         return {card: TAROT_CARD_MEANINGS[card] for card in cards}
 
 
-    def process_query(self, text, topic=None):
+    def process_query(self, text, user_id, topic=None):
         """
         ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
 
@@ -128,12 +127,12 @@ class TarotReader:
             cards = self.draw_tarot_cards()
             self.conversation_state.update({
                 "cards": ', '.join(cards),
-                "topic": topic,
                 "is_card_drawn": True,
                 "card_keywords": self.card_keywords(cards),
             })
             
             prompt_template = self.create_prompt(is_first_reading=True)
+
         else:
             # 후속 질문
             prompt_template = self.create_prompt(is_first_reading=False)
@@ -160,3 +159,7 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
+
+
+
+        
