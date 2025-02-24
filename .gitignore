@@ -4,3 +4,4 @@ __pycache__/
 *.log
 chat_test/
 test.py
+image_test/
