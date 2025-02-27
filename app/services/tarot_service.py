@@ -40,6 +40,7 @@ class TarotReader:
         # 대화 상태 
         self.conversation_state = {
             "is_card_drawn": False, # 카드를 뽑았는지 bool
+            "is_first_reading": True,
             "cards": None,          # 뽑힌 카드 list
             "topic": None,          # 사용자가 선택한 주제 string
             "card_keywords": None,  # 뽑힌 카드의 의미 dict
@@ -150,10 +151,11 @@ class TarotReader:
         self.memory.chat_memory.add_user_message(text)
 
         # 2-1. 첫 리딩이면 : 고른 토픽과 뽑은 카드가 이미 저장된 상태
-        if not self.conversation_state["is_card_drawn"]:
+        if self.conversation_state["is_first_reading"]:
             # 카드 키워드 저장
             self.card_keywords(self.conversation_state["cards"])
-            # is_drawn 업데이트 추가
+            # 첫 리딩 판별 변수 업데이트
+            self.conversation_state["is_first_reading"] = False
             # 프롬프트 생성
             prompt_template = self.create_prompt(is_first_reading=True)
         # 2-2. 후속 리딩이면
