@@ -235,6 +235,50 @@ footer {
   color: #333;
 }
 
+/* =========== 타로 카드 ============ */
+/* 카드 컨테이너 스타일 */
+.tarot-cards-container {
+  display: flex;
+  flex-wrap: wrap;  /* 여러 카드를 가로로 나열 */
+  gap: 10px;        /* 카드 사이 간격 */
+  justify-content: left;  /* 카드 중앙 정렬 */
+  margin-top: 20px;  /* 상단 여백 */
+}
+
+/* 개별 카드 스타일 */
+.tarot-card {
+  width: 150px;   /* 카드의 너비 */
+  height: 250px;  /* 카드의 높이 */
+  overflow: hidden;  /* 이미지가 카드 영역을 벗어나지 않도록 */
+  border-radius: 8px;  /* 카드 모서리 둥글게 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* 카드에 그림자 효과 */
+  background-color: #fff;  /* 배경 색상 */
+  display: flex;
+  justify-content: center;
+  align-items: center;  /* 이미지가 카드 가운데에 오도록 */
+  opacity: 0; /* 처음에는 흐릿하게 시작 */
+  animation: fadeIn 0.8s forwards; /* 애니메이션 추가 */
+}
+
+/* 카드 이미지 스타일 */
+.tarot-card img {
+  width: 100%;  /* 카드의 너비에 맞춰 이미지 크기 */
+  height: 100%; /* 카드의 높이에 맞춰 이미지 크기 */
+  object-fit: cover;  /* 이미지가 카드 안에 잘 맞도록 */
+  border-radius: 8px;  /* 카드 모서리에 맞춰 이미지도 둥글게 */
+}
+
+/* 흐려지다가 나타나는 애니메이션 */
+@keyframes fadeIn {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+  }
+}
+
+
 /* ===========================버튼================================== */
 /* 챗봇 버튼 컨테이너 */
 .button-container {
