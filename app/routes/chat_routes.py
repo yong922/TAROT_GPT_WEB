@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, Response, request
 from flask_login import login_required
-from app.services.tarot_service_test import TarotReader
+from app.services.tarot_service import TarotReader
 from . import chat_bp
 
 tarot_reader = TarotReader()
