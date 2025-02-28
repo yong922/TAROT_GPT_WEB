@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let messageInput = document.getElementById("message-input");
     let chatBox = document.getElementById("chat-box");
     let sendButton = document.getElementById("send-button");
-    let selectedTopic = ""; // ✅ 선택한 토픽 저장 변수
+    let selectedTopic = ""; 
+    let chatId = null;
 
 
     // ✅ 버튼 클릭 시 메시지 전송
@@ -86,7 +87,36 @@ document.addEventListener("DOMContentLoaded", function () {
     // 실행
     displayBotMessageWithButtons();
 
+    // ✅ chat_id를 가져오는 함수
+    async function fetchChatId() {
+        try {
+            let response = await fetch("/chat/get_latest_chat_id");
+            let chatData = await response.json();
+            if (chatData.chat_id) {
+                chatId = chatData.chat_id;
+                console.log("🔹 기존 chat_id 가져옴:", chatId);
+            }
+        } catch (error) {
+            console.error("❌ chat_id 가져오기 실패:", error);
+        }
+    }
 
+    // ✅ 챗봇 응답을 DB에 저장하는 함수
+    async function saveBotResponse(chatId) {
+        try {
+            let response = await fetch("/chat/save_bot_response", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId })
+            });
+
+            let result = await response.json();
+            console.log("📡 [JS] 챗봇 응답 저장 결과:", result);
+        } catch (error) {
+            console.error("❌ [JS] 챗봇 응답 저장 실패:", error);
+        }
+    }
+    
     async function sendMessage() {
         let message = messageInput.value.trim();
         if (!message) return;
@@ -105,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let response = await fetch("/chat/stream", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message, topic: selectedTopic  })
+                body: JSON.stringify({ message, topic: selectedTopic, chat_id: chatId })
             });
 
             // ✅ chunk 단위로 응답을 받아서 말풍선 내부에 추가
@@ -124,6 +154,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
             await readChunks();
+            if (!chatId) {
+                await fetchChatId();
+            }
+            await saveBotResponse(chatId);
         } catch (error) {
             console.error("Error:", error);
         }

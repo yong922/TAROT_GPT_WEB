@@ -1,26 +1,44 @@
-from app import create_app  # Flask 앱을 불러옴
-from app.models import ChatHistory, db
+import json
+from langchain.memory import ConversationBufferMemory
 
-app = create_app()  # Flask 애플리케이션 인스턴스 생성
+def format_chat_history(chat_history):
+    """
+    ✅ ConversationBufferMemory 데이터를 JSON 형식으로 변환하는 함수
+    - HumanMessage, AIMessage 객체에서 content만 추출하여 저장
+    """
+    formatted_history = []
+    for i, message in enumerate(chat_history):
+        role = "user" if i % 2 == 0 else "bot"
+        content = message.content  # ✅ content 부분만 추출
+        formatted_history.append({"role": role, "message": content})
 
-def test_save_chat_history():
-    """DB에 JSON 데이터가 정상적으로 저장되는지 테스트"""
-    with app.app_context():  # ✅ Flask 애플리케이션 컨텍스트 활성화
-        test_chat = ChatHistory(
-            user_id="test_id",
-            topic="미래운",
-            message=[
-                {"role": "user", "text": "올해 취직이 가능할까?"},
-                {"role": "bot", "text": "네, 긍정적인 변화가 예상됩니다!"}
-            ]
-        )
+    return json.dumps({"history": formatted_history}, ensure_ascii=False) # ✅ JSON 변환
 
-        db.session.add(test_chat)
-        db.session.commit()
 
-        print("✅ 대화 저장 완료!")
-        print(f"Chat ID: {test_chat.chat_id}")
+# ✅ Memory 객체 생성
+memory = ConversationBufferMemory(
+    memory_key="chat_history",
+    input_key="text",
+    return_messages=True  # ✅ 리스트 형태로 반환됨
+)
 
-# 실행
-if __name__ == "__main__":
-    test_save_chat_history()
+# ✅ 대화 추가 (사용자 & 챗봇)
+memory.chat_memory.add_user_message("오늘의 운세를 봐줘")
+memory.chat_memory.add_ai_message("좋아! 카드를 뽑을게...")
+memory.chat_memory.add_user_message("내 연애운은 어때?")
+memory.chat_memory.add_ai_message("The Lovers 카드가 나왔어!")
+
+# ✅ 메모리 데이터 출력 (변환 전)
+memory_data = memory.load_memory_variables({})
+print("\n🔹 [1] 변환 전 Memory 데이터 확인:")
+print(memory_data)
+
+# ✅ chat_history만 출력
+chat_history = memory_data["chat_history"]
+print("\n🔹 [2] 변환 전 chat_history 형식:")
+print(chat_history)
+
+# ✅ JSON 변환 후 출력
+json_chat_history = format_chat_history(chat_history)
+print("\n🔹 [3] JSON 변환 후 최종 저장 데이터:")
+print(json_chat_history)
