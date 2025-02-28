@@ -236,17 +236,8 @@ footer {
 }
 
 /* =========== 타로 카드 ============ */
-/* 카드 컨테이너 스타일 */
-.tarot-cards-container {
-  display: flex;
-  flex-wrap: wrap;  /* 여러 카드를 가로로 나열 */
-  gap: 10px;        /* 카드 사이 간격 */
-  justify-content: left;  /* 카드 중앙 정렬 */
-  margin-top: 20px;  /* 상단 여백 */
-}
-
 /* 개별 카드 스타일 */
-.tarot-card {
+.tarot-card-ver1 {
   width: 150px;   /* 카드의 너비 */
   height: 250px;  /* 카드의 높이 */
   overflow: hidden;  /* 이미지가 카드 영역을 벗어나지 않도록 */
@@ -258,24 +249,61 @@ footer {
   align-items: center;  /* 이미지가 카드 가운데에 오도록 */
   opacity: 0; /* 처음에는 흐릿하게 시작 */
   animation: fadeIn 0.8s forwards; /* 애니메이션 추가 */
+  transform: rotateY(0);
 }
 
-/* 카드 이미지 스타일 */
+/* 카드 컨테이너 스타일 */
+.tarot-cards-container {
+  display: flex;
+  flex-wrap: wrap;  /* 여러 카드를 가로로 나열 */
+  gap: 10px;        /* 카드 사이 간격 */
+  justify-content: left;  /* 카드 왼쪽 정렬 */
+  margin-top: 20px;  /* 상단 여백 */
+}
+
+/* 개별 카드 스타일 */
+.tarot-card {
+  width: 150px;
+  height: 250px;
+  /* perspective-origin: center; */
+  /* perspective: 1000px;  3D 효과 */
+  position: relative;
+  opacity: 0; /* 처음에는 투명 */
+  transition: opacity 1s ease-in-out;  /* 부드럽게 나타나기 */
+}
+/* 카드가 한꺼번에 나타나는 애니메이션 */
+.tarot-card.visible {
+  opacity: 1;
+}
+
+/* 카드 앞면 & 뒷면 공통 스타일 */
 .tarot-card img {
-  width: 100%;  /* 카드의 너비에 맞춰 이미지 크기 */
-  height: 100%; /* 카드의 높이에 맞춰 이미지 크기 */
-  object-fit: cover;  /* 이미지가 카드 안에 잘 맞도록 */
-  border-radius: 8px;  /* 카드 모서리에 맞춰 이미지도 둥글게 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 1s ease-in-out;
 }
 
-/* 흐려지다가 나타나는 애니메이션 */
-@keyframes fadeIn {
-  0% {
-      opacity: 0;
-  }
-  100% {
-      opacity: 1;
-  }
+/* 뒷면 (처음 보이는 부분) */
+.tarot-card .back {
+  transform: rotateY(0);
+}
+
+/* 앞면 (초기에는 숨김) */
+.tarot-card .front {
+  transform: rotateY(180deg);
+}
+
+/* 카드가 순차적으로 뒤집히는 효과 */
+.tarot-card.flipped .back {
+  transform: rotateY(-180deg);
+}
+
+.tarot-card.flipped .front {
+  transform: rotateY(0);
 }
 
 

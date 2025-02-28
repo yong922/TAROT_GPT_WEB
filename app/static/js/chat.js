@@ -109,19 +109,55 @@ document.addEventListener("DOMContentLoaded", function () {
         const cardContainer = document.createElement("div");
         cardContainer.classList.add("tarot-cards-container");
         
-        cards.forEach(card => {
+        cards.forEach((card, index) => {
             const cardElement = document.createElement("div");
             cardElement.classList.add("tarot-card");
 
-            const img = document.createElement("img");
-            img.src = cardImagesUrl[card];  // 해당 카드의 이미지 URL
-            img.alt = card;
+            // 카드 앞면 (실제 카드 이미지)
+            const frontImage = document.createElement("img");
+            frontImage.src = cardImagesUrl[card];  // 카드 앞면 이미지
+            frontImage.alt = card;
+            frontImage.classList.add("front");
+            // const img = document.createElement("img");
+            // img.src = cardImagesUrl[card];  // 해당 카드의 이미지 URL
+            // img.alt = card;
 
-            cardElement.appendChild(img);
+            // 카드 뒷면 (고정된 뒷면 이미지)
+            const backImage = document.createElement("img");
+            backImage.src = "/static/imgs/tarot_back_image.jpg";  // 카드 뒷면 이미지
+            backImage.alt = "Card Back";
+            backImage.classList.add("back");
+
+            // cardElement.appendChild(img);
+            // cardContainer.appendChild(cardElement);
+            // 카드의 앞면과 뒷면 추가
+            cardElement.appendChild(backImage);
+            cardElement.appendChild(frontImage);
             cardContainer.appendChild(cardElement);
+            
+            // // 카드마다 애니메이션을 순차적으로 추가
+            // setTimeout(() => {
+            //     cardElement.classList.add("flipped");
+            // }, index * 200);  // 200ms마다 한 카드씩 보이도록 설정
         });
 
         document.querySelector("#chat-box").appendChild(cardContainer);
+
+        // 카드 전체를 한꺼번에 등장시키는 애니메이션
+        setTimeout(() => {
+            // 카드가 한꺼번에 나타남
+            document.querySelectorAll(".tarot-card").forEach(card => {
+                card.classList.add("visible");
+            });
+
+            // 카드가 순차적으로 뒤집히는 애니메이션
+            document.querySelectorAll(".tarot-card").forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add("flipped");
+                }, 800 + index * 500);  // 첫 번째 카드는 1초 후, 이후 1초 간격으로 뒤집힘
+            });
+
+        }, 500);  // 0.5초 후 카드가 한꺼번에 나타남
     }
 
     async function sendMessage() {
@@ -152,6 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const cardData = await response.json();  // JSON 데이터 파싱
                 cards = cardData.cards;  // 뽑힌 카드 배열
                 cardImagesUrl = cardData.card_images_url;  // 카드 이미지 URL 객체
+                console.log("뽑힌 카드:", cards);
+                console.log("카드 URL:", cardImagesUrl);
 
                 displayTarotCards(cards, cardImagesUrl);
             }
