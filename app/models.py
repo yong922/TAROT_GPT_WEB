@@ -48,6 +48,7 @@ class ChatMessage(db.Model):
     💫 개별 메시지 테이블
     - msg_id : PK, 자동 증가
     - chat_id : FK, chats 테이블 참조
+    - msg_num : 채팅 내부의 메시지 번호
     - sender : human 또는 ai
     - message : 메시지 내용
     """

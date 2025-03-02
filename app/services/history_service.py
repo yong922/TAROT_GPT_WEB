@@ -1,6 +1,9 @@
 from app.models import db, Chat, ChatMessage
 
 def last_msg_num(chat_id):
+    """
+    ✅ 사용자의 마지막 msg_num를 조회하는 함수
+    """
     last_msg =ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.msg_num.desc()).first()
     new_msg_num = (last_msg.msg_num + 1) if last_msg else 1
     return new_msg_num
@@ -13,24 +16,14 @@ def create_chat(user_id, topic):
     db.session.add(chat)
     db.session.commit()
     chat_id = chat.chat_id
-
     return chat_id
 
-def save_user_message(chat_id, user_message):
+def save_message(chat_id, message, role):
     """
-    ✅ 사용자 메시지를 DB에 저장하는 함수
-    """
-    msg_num = last_msg_num(chat_id)
-    chat_message = ChatMessage(chat_id=chat_id, msg_num=msg_num, sender="human", message=user_message)
-    db.session.add(chat_message)
-    db.session.commit()
-
-def save_bot_message(chat_id, bot_message):
-    """
-    ✅ 챗봇 메시지를 DB에 저장하는 함수
+    ✅ 메시지를 DB에 저장하는 함수
     """
     msg_num = last_msg_num(chat_id)
-    chat_message = ChatMessage(chat_id=chat_id, msg_num=msg_num, sender="ai", message=bot_message)
+    chat_message = ChatMessage(chat_id=chat_id, msg_num=msg_num, sender=role, message=message)
     db.session.add(chat_message)
     db.session.commit()
 

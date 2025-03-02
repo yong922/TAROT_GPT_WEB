@@ -94,10 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
             let chatData = await response.json();
             if (chatData.chat_id) {
                 chatId = chatData.chat_id;
-                console.log("🔹 기존 chat_id 가져옴:", chatId);
+                console.log("기존 chat_id 가져옴:", chatId);
             }
         } catch (error) {
-            console.error("❌ chat_id 가져오기 실패:", error);
+            console.error("chat_id 가져오기 실패:", error);
         }
     }
 
@@ -111,9 +111,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             let result = await response.json();
-            console.log("📡 [JS] 챗봇 응답 저장 결과:", result);
+            console.log("[JS] 챗봇 응답 저장 결과:", result);
         } catch (error) {
-            console.error("❌ [JS] 챗봇 응답 저장 실패:", error);
+            console.error("[JS] 챗봇 응답 저장 실패:", error);
         }
     }
     
