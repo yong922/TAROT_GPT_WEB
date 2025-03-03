@@ -7,7 +7,7 @@
         <li class="chat-item">
             {% set chat_icon = chat_icon_list | selectattr('topic', 'equalto', chat.topic) | first %}
             <span class="chat-icon"><i class="fa-solid {{ chat_icon.icon }}"></i></span>
-            <span class="chat-title">{{ chat.title }}</span>
+            <span class="chat-title">{{ chat.preview_message }}</span>
         </li>
         {% else %}
         <li>채팅 목록이 없습니다.</li>

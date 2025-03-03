@@ -2,9 +2,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let messageInput = document.getElementById("message-input");
     let chatBox = document.getElementById("chat-box");
     let sendButton = document.getElementById("send-button");
-    let selectedTopic = ""; // ✅ 선택한 토픽 저장 변수
+    let selectedTopic = ""; 
+    let chatId = null;
     let firstMessageSent = false;  // 첫 번째 메시지인지 여부
 
+    // user_id의 chat list data가 제대로 있는지 확인
+    fetchChatList();
 
     // ✅ 버튼 클릭 시 메시지 전송
     sendButton.addEventListener("click", sendMessage);
@@ -97,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 🟢 초기 메시지 표시 (stream 방식)
     async function displayBotMessageWithButtons() {
-        await addMessageToChatBox("어서오렴. 오늘은 어떤 이야기를 나눠볼까?🧓🏻☕", 50, true);
+        await addMessageToChatBox("어서오너라. 오늘은 어떤 이야기를 나눠볼까? 아래에서 선택해보렴.🧓🏻☕", 50, true);
     }
 
     // 실행
@@ -159,7 +162,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }, 500);  // 0.5초 후 카드가 한꺼번에 나타남
     }
+    // ✅ chat_id를 가져오는 함수
+    async function fetchChatId() {
+        try {
+            let response = await fetch("/chat/get_latest_chat_id");
+            let chatData = await response.json();
+            if (chatData.chat_id) {
+                chatId = chatData.chat_id;
+                console.log("기존 chat_id 가져옴:", chatId);
+            }
+        } catch (error) {
+            console.error("chat_id 가져오기 실패:", error);
+        }
+    }
 
+    // user_id의 chat list data가 제대로 있는지 확인
+    async function fetchChatList() {
+        try {
+            let response = await fetch("/chat/chat_list");
+            console.log("response:", response);
+            let chatData = await response.json();
+            console.log("chatData:", chatData);
+        } catch (error) {
+            console.error("채팅 목록 가져오기 실패:", error);
+        }
+    }
+    
+
+    // ✅ 챗봇 응답을 DB에 저장하는 함수
+    async function saveBotResponse(chatId) {
+        try {
+            let response = await fetch("/chat/save_bot_response", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId })
+            });
+
+            let result = await response.json();
+            console.log("[JS] 챗봇 응답 저장 결과:", result);
+        } catch (error) {
+            console.error("[JS] 챗봇 응답 저장 실패:", error);
+        }
+    }
+    
     async function sendMessage() {
         let message = messageInput.value.trim();
         if (!message) return;
@@ -203,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let response = await fetch("/chat/stream", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message, topic: selectedTopic, chat_id: chatId })
             });
 
             if (!response.ok) {
@@ -227,6 +272,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
             await readChunks();
+            if (!chatId) {
+                await fetchChatId();
+            }
+            await saveBotResponse(chatId);
         } catch (error) {
             console.error("Error:", error);
         }

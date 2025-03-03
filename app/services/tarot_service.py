@@ -42,7 +42,6 @@ class TarotReader:
             "is_card_drawn": False, # 카드를 뽑았는지 bool
             "is_first_reading": True,
             "cards": None,          # 뽑힌 카드 list
-            "topic": None,          # 사용자가 선택한 주제 string
             "card_keywords": None,  # 뽑힌 카드의 의미 dict
         }
         
@@ -133,7 +132,7 @@ class TarotReader:
         return self.conversation_state
 
 
-    def process_query(self, text):
+    def process_query(self, text, user_id):
         """
         ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
 
@@ -184,3 +183,7 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
+
+
+
+        
