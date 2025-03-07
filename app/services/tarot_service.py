@@ -114,8 +114,17 @@ class TarotReader:
         """
         ✅ self.conversation_state["cards"]에 든 카드 3장의 이미지 URL을 반환
         """
-        
-        return {card: TAROT_CARD_IMAGES.get(card, "https://i.namu.wiki/i/BldqgVbeK4tGO4_VXDjy-3cMuC_Zw7WDqDUDUsApMzkry4X4SamqFtv6FmL872EJq8uQTelygkk8uG34o1H-4Q.webp") for card in cards}
+
+        base_url = "/static/imgs/tarot_front_images/"
+        static_folder = os.path.join(os.getcwd(), "app", "static", "imgs", "tarot_front_images") 
+        default_img = "/static/imgs/tarot_front_images/default.png"  # 기본
+
+        return {
+            card: f"{base_url}{card}.png"
+            if os.path.exists(os.path.join(static_folder, f"{card}.png"))
+            else default_img
+            for card in cards
+        }
         
 
     def card_keywords(self, cards):
