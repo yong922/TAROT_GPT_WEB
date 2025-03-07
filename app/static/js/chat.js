@@ -6,8 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let chatId = null;
     let firstMessageSent = false;  // 첫 번째 메시지인지 여부
 
-    // user_id의 chat list data가 제대로 있는지 확인
-    fetchChatList();
+
+    fetchChatId();  // ✅ chat_id 가져오기
+    fetchChatList();  // ✅ user의 채팅 가져오기
 
     // ✅ 버튼 클릭 시 메시지 전송
     sendButton.addEventListener("click", sendMessage);
@@ -121,9 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
             frontImage.src = cardImagesUrl[card];  // 카드 앞면 이미지
             frontImage.alt = card;
             frontImage.classList.add("front");
-            // const img = document.createElement("img");
-            // img.src = cardImagesUrl[card];  // 해당 카드의 이미지 URL
-            // img.alt = card;
+            console.log("카드 이미지 URL:", frontImage.src);
 
             // 카드 뒷면 (고정된 뒷면 이미지)
             const backImage = document.createElement("img");
@@ -131,17 +130,11 @@ document.addEventListener("DOMContentLoaded", function () {
             backImage.alt = "Card Back";
             backImage.classList.add("back");
 
-            // cardElement.appendChild(img);
-            // cardContainer.appendChild(cardElement);
             // 카드의 앞면과 뒷면 추가
             cardElement.appendChild(backImage);
             cardElement.appendChild(frontImage);
             cardContainer.appendChild(cardElement);
             
-            // // 카드마다 애니메이션을 순차적으로 추가
-            // setTimeout(() => {
-            //     cardElement.classList.add("flipped");
-            // }, index * 200);  // 200ms마다 한 카드씩 보이도록 설정
         });
 
         document.querySelector("#chat-box").appendChild(cardContainer);
@@ -162,6 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }, 500);  // 0.5초 후 카드가 한꺼번에 나타남
     }
+
     // ✅ chat_id를 가져오는 함수
     async function fetchChatId() {
         try {
@@ -175,19 +169,17 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("chat_id 가져오기 실패:", error);
         }
     }
-
-    // user_id의 chat list data가 제대로 있는지 확인
+    
+    // user_id의 채팅을 전부 가져오는 함수
     async function fetchChatList() {
         try {
-            let response = await fetch("/chat/chat_list");
-            console.log("response:", response);
+            let response = await fetch("/chat/chat_list_test");
             let chatData = await response.json();
             console.log("chatData:", chatData);
         } catch (error) {
             console.error("채팅 목록 가져오기 실패:", error);
         }
     }
-    
 
     // ✅ 챗봇 응답을 DB에 저장하는 함수
     async function saveBotResponse(chatId) {
