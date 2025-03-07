@@ -149,7 +149,20 @@ footer {
   overflow-y: auto;
   padding: 10px;
 }
-
+.chat-box::-webkit-scrollbar {
+  width: 10px; /* 스크롤바 너비 */
+}
+.chat-box::-webkit-scrollbar-track {
+  background: #a48dba; /* 스크롤바 트랙 색 */
+  border-radius: 10px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background: #6012b3; /* 스크롤바 색 */
+  border-radius: 10px;
+}
+.chat-box::-webkit-scrollbar-thumb:hover {
+  background: #723bae; /* 마우스 호버 시 색 변경 */
+}
 
 /* 채팅 메시지 */
 .message {
@@ -235,6 +248,78 @@ footer {
   color: #333;
 }
 
+/* =========== 타로 카드 ============ */
+/* 개별 카드 스타일 */
+.tarot-card-ver1 {
+  width: 150px;   /* 카드의 너비 */
+  height: 250px;  /* 카드의 높이 */
+  overflow: hidden;  /* 이미지가 카드 영역을 벗어나지 않도록 */
+  border-radius: 8px;  /* 카드 모서리 둥글게 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* 카드에 그림자 효과 */
+  background-color: #fff;  /* 배경 색상 */
+  display: flex;
+  justify-content: center;
+  align-items: center;  /* 이미지가 카드 가운데에 오도록 */
+  opacity: 0; /* 처음에는 흐릿하게 시작 */
+  animation: fadeIn 0.8s forwards; /* 애니메이션 추가 */
+  transform: rotateY(0);
+}
+
+/* 카드 컨테이너 스타일 */
+.tarot-cards-container {
+  display: flex;
+  flex-wrap: wrap;  /* 여러 카드를 가로로 나열 */
+  gap: 10px;        /* 카드 사이 간격 */
+  justify-content: left;  /* 카드 왼쪽 정렬 */
+  margin-top: 20px;  /* 상단 여백 */
+}
+
+/* 개별 카드 스타일 */
+.tarot-card {
+  width: 150px;
+  height: 250px;
+  /* perspective-origin: center; */
+  /* perspective: 1000px;  3D 효과 */
+  position: relative;
+  opacity: 0; /* 처음에는 투명 */
+  transition: opacity 1s ease-in-out;  /* 부드럽게 나타나기 */
+}
+/* 카드가 한꺼번에 나타나는 애니메이션 */
+.tarot-card.visible {
+  opacity: 1;
+}
+
+/* 카드 앞면 & 뒷면 공통 스타일 */
+.tarot-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 1s ease-in-out;
+}
+
+/* 뒷면 (처음 보이는 부분) */
+.tarot-card .back {
+  transform: rotateY(0);
+}
+
+/* 앞면 (초기에는 숨김) */
+.tarot-card .front {
+  transform: rotateY(180deg);
+}
+
+/* 카드가 순차적으로 뒤집히는 효과 */
+.tarot-card.flipped .back {
+  transform: rotateY(-180deg);
+}
+
+.tarot-card.flipped .front {
+  transform: rotateY(0);
+}
+
+
 /* ===========================버튼================================== */
 /* 챗봇 버튼 컨테이너 */
 .button-container {
@@ -253,7 +338,7 @@ footer {
   top: 0;
   width: 250px;
   height: 100%;
-  background-color: #333;
+  background-color: #5c397d;
   color: white;
   transition: transform 0.3s ease-in-out;
   padding: 20px;
@@ -272,17 +357,17 @@ footer {
 
 /* 닫기 버튼 */
 .close-btn {
-  background: #333;
-  color: white;
+  background: rgba(0, 0, 0, 0);
+  color: #dedede;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px;
   cursor: pointer;
   width: auto;
   text-align: left;
 }
 .close-btn:hover {
-  background: #555;
+  background: #6e4b8f;
 }
 
 /* 사이드바 열기 버튼 */
@@ -290,10 +375,10 @@ footer {
   position: fixed;
   left: 20px;
   top: 20px;
-  background: #333;
-  color: white;
+  background: rgba(0, 0, 0, 0);
+  color: #dedede;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px;
   cursor: pointer;
 }
@@ -311,7 +396,7 @@ footer {
 /* 대화 목록 - 대화 아이템 */
 .chat-item {
   display: flex;
-  align-items: center;
+  align-items: left;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
@@ -319,12 +404,24 @@ footer {
 }
 .chat-item:hover {
   border-radius: 5px;
-  background: #555;
+  background: #6e4b8f;
 }
 
 /* 대화 아이콘과 제목 */
 .chat-icon {
-  margin-right: 10px;
+  margin-right: 15px;
+}
+.chat-icon i {
+  font-size: 20px; /* 원하는 크기로 조절 */
+}
+
+.chat-title {
+  /* font-weight: bold; */
+  color: rgb(245, 245, 245);
+  font-size: 15px;
+}
+.chat-title:hover {
+  color: #fff;
 }
 
 /* 사용자 정보 컨테이너 (로그아웃 버튼 포함) */
@@ -352,7 +449,7 @@ footer {
 }
 /* 로그아웃 버튼 스타일 */
 .logout-btn {
-  color: white;
+  color: rgb(195, 195, 195);
   text-decoration: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -360,5 +457,6 @@ footer {
   transition: background 0.3s;
 }
 .logout-btn:hover {
-  background: #555;
+  background: #644481;
+  color: rgb(210, 210, 210);
 }
