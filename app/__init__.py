@@ -24,9 +24,9 @@ def create_app():
     def load_user(user_id):
         return User.query.get(user_id)
     
-    from app.routes import auth_bp, chat_bp, history_bp
+    from app.routes import auth_bp, chat_bp, chat_history_bp
     app.register_blueprint(auth_bp, url_prefix='/')
     app.register_blueprint(chat_bp, url_prefix='/chat')
-    app.register_blueprint(history_bp, url_prefix='/history')
+    app.register_blueprint(chat_history_bp, url_prefix='/chat_history')
 
     return app
