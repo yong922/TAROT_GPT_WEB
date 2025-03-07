@@ -1,4 +1,5 @@
 from app.models import db, Chat, ChatMessage
+from sqlalchemy import func
 
 def last_msg_num(chat_id):
     """
@@ -35,20 +36,19 @@ def get_latest_chat_id(user_id):
     return last_chat.chat_id if last_chat else None
 
 
-def get_chat_list(user_id):
+#========================================
+def get_user_chats(user_id):
     """
     ✅ chat list 조회
+    ==========대화 기록 가져오기 test==========
     """
     chats = Chat.query.filter_by(user_id=user_id)
     return chats
 
-def get_chat_messages(user_id, chat_id):
+def get_chat_titles(chat_id):
     """
     ✅ 특정 user_id의 특정 chat_id에 해당하는 첫 번째 메시지의 15글자만 가져오기
     """
-    # chat = check_user_chat(user_id, chat_id)
-    # if not chat:
-        # return None  # 해당 유저의 채팅이 아닐 경우
 
     messages = ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.msg_num).all()
 
@@ -59,3 +59,46 @@ def get_chat_messages(user_id, chat_id):
     preview_message = first_message[:15]
 
     return preview_message
+
+def get_chat_list(user_id):
+    """사용자의 모든 대화 목록을 가져오는 함수"""
+    chats = (
+        db.session.query(
+            Chat.chat_id,  # chat_id
+            Chat.topic,    # topic
+            # func.coalesce(
+            #     db.session.query(ChatMessage.message)  # message
+            #     .filter(ChatMessage.chat_id == Chat.chat_id)
+            #     .order_by(ChatMessage.msg_num)
+            #     .limit(1)
+            #     .scalar(),
+            #     ""  # 메시지가 없을 경우 빈 문자열 반환
+            # ).label("preview_message")
+        )
+        .filter(Chat.user_id == user_id)
+        .order_by(Chat.created_at.desc())
+        .all()
+    )
+
+    chat_list = [
+        {
+            "chat_id": chat.chat_id,
+            "topic": chat.topic,
+            "preview_message": get_chat_titles(chat.chat_id)
+        }
+        for chat in chats
+    ]
+    
+    return chat_list
+
+
+def get_chat_messages(chat_id):
+    """ 특정 chat_id의 모든 메시지를 가져오는 함수 """
+    messages = (
+        db.session.query(ChatMessage)
+        .filter(ChatMessage.chat_id == chat_id)
+        .order_by(ChatMessage.msg_num)
+        .all()
+    )
+
+    return [{"sender": msg.sender, "message": msg.message} for msg in messages]

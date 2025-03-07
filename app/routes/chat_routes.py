@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, Response, request
 from flask_login import login_required, current_user
 from app.services.tarot_service import TarotReader
-from app.services.history_service import create_chat, save_message, get_latest_chat_id, get_chat_list, get_chat_messages
+from app.services.history_service import create_chat, save_message, get_latest_chat_id, get_user_chats, get_chat_titles, get_chat_list, get_chat_messages
 from . import chat_bp
 
 tarot_reader = TarotReader()
@@ -92,53 +92,67 @@ def save_bot_response():
     return jsonify({"status": "success", "message": "Bot response saved."})
 
 
+# =================== 채팅 기록 ====================
 @chat_bp.route("/", methods=['GET'])
 @login_required
 def tarot_chat():
-    """채팅 기록을 가져오는 API"""
-    chat_icon_list = [
-        {'topic': '애정운', 'icon': 'fa-heart'},
-        {'topic': '재물운', 'icon': 'fa-coins'},
-        {'topic': '학업운', 'icon': 'fa-briefcase'},
-        {'topic': '건강운', 'icon': 'fa-medkit'},
-        {'topic': '미래운', 'icon': 'fa-crystal-ball'},
-    ]
+    """ ✅ 채팅 기록 목록을 가져오는 API """
+    # chat_icon_list = [
+    #     {'topic': '애정운', 'icon': 'fa-heart'},
+    #     {'topic': '재물운', 'icon': 'fa-coins'},
+    #     {'topic': '학업운', 'icon': 'fa-briefcase'},
+    #     {'topic': '건강운', 'icon': 'fa-medkit'},
+    #     {'topic': '미래운', 'icon': 'fa-crystal-ball'},
+    # ]
 
-    user_id = current_user.id
-    chat_list = []
-
-    if user_id:
-        # DB에서 사용자별 채팅 기록 가져오기
-        chats = get_chat_list(user_id)
-        chat_list = [
-        {
-            "chat_id": chat.chat_id,
-            "topic": chat.topic,
-            "preview_message": get_chat_messages(user_id, chat.chat_id)  # 첫 번째 메시지의 15글자만 가져옴
-        }
-        for chat in chats
-    ]
-
-    else:
-        return jsonify({"error": "user_id is required"}), 400
+    # user_id = current_user.id
+    # username = current_user.nickname
+    # chat_list = get_chat_history(user_id)
     
-    return render_template("tarot_chat.html", chat_list=chat_list, chat_icon_list=chat_icon_list)
+    #     return render_template("tarot_chat.html", chat_list=chat_list, chat_icon_list=chat_icon_list, username=username)
+    return render_template("tarot_chat.html")
+
+# @chat_bp.route("/chat_list", methods=['GET'])
+# @login_required
+# def tarot_chat():
+#     """ ✅ 채팅 기록 목록을 가져오는 API """
+#     chat_icon_list = [
+#         {'topic': '애정운', 'icon': 'fa-heart'},
+#         {'topic': '재물운', 'icon': 'fa-coins'},
+#         {'topic': '학업운', 'icon': 'fa-briefcase'},
+#         {'topic': '건강운', 'icon': 'fa-medkit'},
+#         {'topic': '미래운', 'icon': 'fa-crystal-ball'},
+#     ]
+
+#     user_id = current_user.id
+#     username = current_user.nickname
+#     chat_list = get_chat_history(user_id)
+    
+#     return render_template("sidebar.html", chat_list=chat_list, chat_icon_list=chat_icon_list, username=username)
+
+@chat_bp.route("/<int:chat_id>", methods=["GET"])
+@login_required
+def fetch_chat_messages(chat_id):
+    """ ✅ 특정 대화의 메시지를 가져오는 API """
+    messages = get_chat_messages(chat_id)  # [{sender, message}]
+    return jsonify(messages)
 
 
-@chat_bp.route("/chat_list", methods=["GET"])
+# ==========대화 기록 가져오기 test==========
+@chat_bp.route("/chat_list_test", methods=["GET"])
 def get_chats():
     user_id = current_user.id
     
     if not user_id:
         return jsonify({"error": "user_id is required"}), 400
     
-    chats = get_chat_list(user_id)  # -> Chat.query.filter_b
+    chats = get_user_chats(user_id)
 
     chat_list = [
         {
             "chat_id": chat.chat_id,
             "topic": chat.topic,
-            "preview_message": get_chat_messages(user_id, chat.chat_id)  # 첫 번째 메시지의 15글자만 가져옴
+            "preview_message": get_chat_titles(chat.chat_id)  # 첫 번째 메시지의 15글자만 가져옴
         }
         for chat in chats
     ]
