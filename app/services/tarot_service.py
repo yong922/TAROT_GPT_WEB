@@ -66,7 +66,7 @@ class TarotReader:
         - 후속 질문이면 follow_up_prompt 사용
         - str + str으로 templates 생성
 
-        Args : is_first_reading (bool) 카드 뽑음 여부
+        Args : is_first_reading (bool) 처응 응답 여부
         Returns : ChatPromptTemplate(프롬프트 템플릿 객체)
         """
 
@@ -91,17 +91,15 @@ class TarotReader:
             "The Lovers", "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice", "The Hanged Man",
             "Death", "Temperance", "The Devil", "The Tower", "The Star", "The Moon", "The Sun", "Judgement", "The World"
         ]
-        return random.sample(cards, 3)
 
-
-    def card_keywords(self, cards):
-        """
-        ✅ 뽑은 카드의 의미를 담는 함수
-
-        Args : cards (list) 뽑힌 카드 리스트
-        Return : dict
-        """
-        return {card: TAROT_CARD_MEANINGS[card] for card in cards}
+        selected_cards = random.sample(cards, 3)
+        self.conversation_state.update({
+                "cards": ', '.join(selected_cards),
+                "card_keywords": {card: TAROT_CARD_MEANINGS[card] for card in cards},
+            })
+        print(">>>>model11", selected_cards)
+        print(">>>>model22", self.conversation_state["cards"])
+        return selected_cards
 
 
     def process_query(self, text, user_id, topic=None):
@@ -123,18 +121,10 @@ class TarotReader:
 
         # 프롬프트 생성
         if not self.conversation_state["is_card_drawn"]:
-            # 첫 번째 리딩: 카드 뽑기
-            cards = self.draw_tarot_cards()
-            self.conversation_state.update({
-                "cards": ', '.join(cards),
-                "is_card_drawn": True,
-                "card_keywords": self.card_keywords(cards),
-            })
-            
             prompt_template = self.create_prompt(is_first_reading=True)
+            self.conversation_state["is_card_drawn"] = True
 
         else:
-            # 후속 질문
             prompt_template = self.create_prompt(is_first_reading=False)
 
         # 모델 실행
