@@ -92,43 +92,25 @@ def save_bot_response():
     return jsonify({"status": "success", "message": "Bot response saved."})
 
 
-# =================== 채팅 기록 ====================
+# =================== 사이드바 ====================
 @chat_bp.route("/", methods=['GET'])
 @login_required
 def tarot_chat():
     """ ✅ 채팅 기록 목록을 가져오는 API """
-    # chat_icon_list = [
-    #     {'topic': '애정운', 'icon': 'fa-heart'},
-    #     {'topic': '재물운', 'icon': 'fa-coins'},
-    #     {'topic': '학업운', 'icon': 'fa-briefcase'},
-    #     {'topic': '건강운', 'icon': 'fa-medkit'},
-    #     {'topic': '미래운', 'icon': 'fa-crystal-ball'},
-    # ]
+    chat_icon_list = [
+        {'topic': '애정운', 'icon': 'fa-heart'},
+        {'topic': '재물운', 'icon': 'fa-coins'},
+        {'topic': '학업운', 'icon': 'fa-briefcase'},
+        {'topic': '건강운', 'icon': 'fa-medkit'},
+        {'topic': '미래운', 'icon': 'fa-crystal-ball'},
+    ]
 
-    # user_id = current_user.id
-    # username = current_user.nickname
-    # chat_list = get_chat_history(user_id)
+    user_id = current_user.id
+    username = current_user.nickname
+    chat_list = get_chat_list(user_id)
     
-    #     return render_template("tarot_chat.html", chat_list=chat_list, chat_icon_list=chat_icon_list, username=username)
-    return render_template("tarot_chat.html")
+    return render_template("tarot_chat.html", chat_list=chat_list, chat_icon_list=chat_icon_list, username=username)
 
-# @chat_bp.route("/chat_list", methods=['GET'])
-# @login_required
-# def tarot_chat():
-#     """ ✅ 채팅 기록 목록을 가져오는 API """
-#     chat_icon_list = [
-#         {'topic': '애정운', 'icon': 'fa-heart'},
-#         {'topic': '재물운', 'icon': 'fa-coins'},
-#         {'topic': '학업운', 'icon': 'fa-briefcase'},
-#         {'topic': '건강운', 'icon': 'fa-medkit'},
-#         {'topic': '미래운', 'icon': 'fa-crystal-ball'},
-#     ]
-
-#     user_id = current_user.id
-#     username = current_user.nickname
-#     chat_list = get_chat_history(user_id)
-    
-#     return render_template("sidebar.html", chat_list=chat_list, chat_icon_list=chat_icon_list, username=username)
 
 @chat_bp.route("/<int:chat_id>", methods=["GET"])
 @login_required
@@ -137,24 +119,3 @@ def fetch_chat_messages(chat_id):
     messages = get_chat_messages(chat_id)  # [{sender, message}]
     return jsonify(messages)
 
-
-# ==========대화 기록 가져오기 test==========
-@chat_bp.route("/chat_list_test", methods=["GET"])
-def get_chats():
-    user_id = current_user.id
-    
-    if not user_id:
-        return jsonify({"error": "user_id is required"}), 400
-    
-    chats = get_user_chats(user_id)
-
-    chat_list = [
-        {
-            "chat_id": chat.chat_id,
-            "topic": chat.topic,
-            "preview_message": get_chat_titles(chat.chat_id)  # 첫 번째 메시지의 15글자만 가져옴
-        }
-        for chat in chats
-    ]
-    
-    return jsonify({"chat_list": chat_list})
