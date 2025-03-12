@@ -24,6 +24,7 @@ def save_message(chat_id, message, role):
     ✅ 메시지를 DB에 저장하는 함수
     """
     msg_num = last_msg_num(chat_id)
+    print("save_message의 msg_num", msg_num)
     chat_message = ChatMessage(chat_id=chat_id, msg_num=msg_num, sender=role, message=message)
     db.session.add(chat_message)
     db.session.commit()
@@ -36,7 +37,7 @@ def get_latest_chat_id(user_id):
     return last_chat.chat_id if last_chat else None
 
 
-#========================================
+#================== 사이드바 대화 기록 ======================
 def get_user_chats(user_id):
     """
     ✅ chat list 조회
@@ -66,14 +67,6 @@ def get_chat_list(user_id):
         db.session.query(
             Chat.chat_id,  # chat_id
             Chat.topic,    # topic
-            # func.coalesce(
-            #     db.session.query(ChatMessage.message)  # message
-            #     .filter(ChatMessage.chat_id == Chat.chat_id)
-            #     .order_by(ChatMessage.msg_num)
-            #     .limit(1)
-            #     .scalar(),
-            #     ""  # 메시지가 없을 경우 빈 문자열 반환
-            # ).label("preview_message")
         )
         .filter(Chat.user_id == user_id)
         .order_by(Chat.created_at.desc())
