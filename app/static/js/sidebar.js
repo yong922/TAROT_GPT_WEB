@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const openButton = document.getElementById("open-sidebar");
     const chatItems = document.querySelectorAll(".chat-item");  // 채팅 아이템 클릭
     const chatBox = document.getElementById("chat-box");  // 채팅 메시지 출력 영역
-
+    const messageInputArea = document.querySelector(".message-input-area"); // 입력창 + 버튼 포함 영역
 
     // 🖱️ 닫기 버튼 클릭 시 사이드바 닫기
     toggleButton.addEventListener("click", function () {
@@ -52,6 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 messageDiv.textContent = msg.message;
                 chatBox.appendChild(messageDiv);
             });
+
+            // 📌 기존 대화일 경우 입력창과 버튼 숨기기
+            messageInputArea.style.display = "none";
 
         } catch (error) {
             console.error("채팅 메시지 가져오기 실패:", error);

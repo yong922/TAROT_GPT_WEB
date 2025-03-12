@@ -7,9 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let firstMessageSent = false;  // 첫 번째 메시지인지 여부
 
 
-    fetchChatId();  // ✅ chat_id 가져오기
-    fetchChatList();  // ✅ user의 채팅 가져오기
-
     // ✅ 버튼 클릭 시 메시지 전송
     sendButton.addEventListener("click", sendMessage);
 
@@ -170,16 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     
-    // user_id의 채팅을 전부 가져오는 함수
-    async function fetchChatList() {
-        try {
-            let response = await fetch("/chat/chat_list_test");
-            let chatData = await response.json();
-            console.log("chatData:", chatData);
-        } catch (error) {
-            console.error("채팅 목록 가져오기 실패:", error);
-        }
-    }
 
     // ✅ 챗봇 응답을 DB에 저장하는 함수
     async function saveBotResponse(chatId) {
