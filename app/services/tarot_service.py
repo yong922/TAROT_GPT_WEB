@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.schema.runnable import RunnableSequence  
 from langchain.schema import StrOutputParser 
-from app.data import tarot_meaning, templates
+from app.data import tarot_meaning, templates, tarot_card_images
 
 
 # 환경변수 로드
@@ -15,6 +15,8 @@ load_dotenv()
 os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
 # 타로 의미 데이터 로드
 TAROT_CARD_MEANINGS = tarot_meaning.TAROT_CARD_MEANINGS
+# 타로 카드 이미지 URL
+TAROT_CARD_IMAGES = tarot_card_images.TAROT_CARD_IMAGES
 
 
 class TarotReader:
@@ -81,8 +83,8 @@ class TarotReader:
             ]
         )
 
-
-    def draw_tarot_cards(self):
+    
+      def draw_tarot_cards(self):
         """
         ✅ 22장의 메이저 아르카나 타로 카드 중 3장 무작위 뽑기
         """
@@ -100,53 +102,54 @@ class TarotReader:
         return selected_cards
 
 
-    def process_query(self, text, user_id, topic=None):
-        """
-        ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
+      def process_query(self, text, user_id, topic=None):
+          """
+          ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
 
-        - 첫 리딩이면 카드를 뽑고 카드 키워드 저장
-        - 후속 질문이면 기존 카드 정보를 유지하면서 답변 제공
+          - 첫 리딩이면 카드를 뽑고 카드 키워드 저장
+          - 후속 질문이면 기존 카드 정보를 유지하면서 답변 제공
 
-        Args : 
-            text (str) : 사용자 질문
-            topic (str) : 사용자가 선택한 주제
-        Yields:
-            str : 모델이 생성한 타로 해석 (stream)
-        """
+          Args : 
+              text (str) : 사용자 질문
+              topic (str) : 사용자가 선택한 주제
+          Yields:
+              str : 모델이 생성한 타로 해석 (stream)
+          """
 
-        # 사용자 질문 저장
-        self.memory.chat_memory.add_user_message(text)
+          # 사용자 질문 저장
+          self.memory.chat_memory.add_user_message(text)
 
-        # 프롬프트 생성
-        if not self.conversation_state["is_card_drawn"]:
-            prompt_template = self.create_prompt(is_first_reading=True)
-            self.conversation_state["is_card_drawn"] = True
+          # 프롬프트 생성
+          if not self.conversation_state["is_card_drawn"]:
+              prompt_template = self.create_prompt(is_first_reading=True)
+              self.conversation_state["is_card_drawn"] = True
 
-        else:
-            prompt_template = self.create_prompt(is_first_reading=False)
+          else:
+              prompt_template = self.create_prompt(is_first_reading=False)
 
-        # 모델 실행
-        chain = RunnableSequence(
-            prompt_template, 
-            self.model,      
-            StrOutputParser()  
-        )
+          # 모델 실행
+          chain = RunnableSequence(
+              prompt_template, 
+              self.model,      
+              StrOutputParser()  
+          )
 
-        # 응답 streaming
-        full_response = ""
-        for chunk in chain.stream(input={
-            "text": text,
-            "topic": topic,
-            "chat_history": self.memory.chat_memory.messages,
-            "cards": self.conversation_state["cards"],
-            "card_keywords": self.conversation_state["card_keywords"]
-        }):
-            yield chunk   
-            time.sleep(0.1)
-            full_response += chunk
+          # 응답 streaming
+          full_response = ""
+          for chunk in chain.stream(input={
+              "text": text,
+              "topic": topic,
+              "chat_history": self.memory.chat_memory.messages,
+              "cards": self.conversation_state["cards"],
+              "card_keywords": self.conversation_state["card_keywords"]
+          }):
+              yield chunk   
+              time.sleep(0.1)
+              full_response += chunk
 
-        # 챗봇 응답 저장
-        self.memory.chat_memory.add_ai_message(full_response)
+          # 챗봇 응답 저장
+          self.memory.chat_memory.add_ai_message(full_response)
+
 
 
 

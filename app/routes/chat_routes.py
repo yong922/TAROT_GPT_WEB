@@ -18,8 +18,6 @@ def tarot_chat():
     user_name = current_user.nickname
     chat_list = get_chat_list(user_id)
 
-    print("DEBUG: chat_list =", chat_list)
-
     return render_template("tarot_chat.html", 
                            chat_list=chat_list,
                            user_name = user_name)
@@ -39,7 +37,7 @@ def set_topic():
     
     return jsonify({"status": "success", "message": "토픽이 설정되었습니다."}), 200
 
-
+  
 @chat_bp.route("/draw_tarot", methods=["POST"])
 def draw_tarot():
     """ 
@@ -50,7 +48,7 @@ def draw_tarot():
 
     return jsonify({ "cards": drawn_cards, "card_images_url": card_images_url})
 
-
+  
 @chat_bp.route("/stream", methods=["POST"])
 def chat():
     """
@@ -71,7 +69,7 @@ def chat():
     save_message(chat_id, user_message, "human")
 
     return Response(
-        tarot_reader.process_query(user_message, topic, user_id),
+        tarot_reader.process_query(user_message, user_id),
         content_type="text/plain"
     )
 
