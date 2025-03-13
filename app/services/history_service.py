@@ -35,39 +35,31 @@ def get_latest_chat_id(user_id):
     """
     last_chat = Chat.query.filter_by(user_id=user_id).order_by(Chat.created_at.desc()).first()
     return last_chat.chat_id if last_chat else None
+  
 
-
-#================== 사이드바 대화 기록 ======================
-def get_user_chats(user_id):
-    """
-    ✅ chat list 조회
-    ==========대화 기록 가져오기 test==========
-    """
-    chats = Chat.query.filter_by(user_id=user_id)
-    return chats
-
-def get_chat_titles(chat_id):
-    """
-    ✅ 특정 user_id의 특정 chat_id에 해당하는 첫 번째 메시지의 15글자만 가져오기
-    """
-
-    messages = ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.msg_num).all()
-
-    # 첫 번째 메시지 가져오기 (없으면 빈 문자열 반환)
-    first_message = messages[0].message if messages else ""
-
-    # 첫 번째 메시지의 처음 15글자만 가져오기
-    preview_message = first_message[:15]
-
-    return preview_message
+################### 사이드바 #####################
 
 def get_chat_list(user_id):
-    """사용자의 모든 대화 목록을 가져오는 함수"""
+    """
+    ✅ 사용자의 모든 대화 목록을 가져오는 함수
+    """
+    subquery = (
+        db.session.query(
+            ChatMessage.chat_id,
+            db.func.min(ChatMessage.msg_num).label("first_msg_num")
+        )
+        .group_by(ChatMessage.chat_id)
+        .subquery()
+    )
+
     chats = (
         db.session.query(
-            Chat.chat_id,  # chat_id
-            Chat.topic,    # topic
+            Chat.chat_id,
+            Chat.topic,
+            ChatMessage.message
         )
+        .join(subquery, Chat.chat_id == subquery.c.chat_id)
+        .join(ChatMessage, (ChatMessage.chat_id == subquery.c.chat_id) & (ChatMessage.msg_num == subquery.c.first_msg_num))
         .filter(Chat.user_id == user_id)
         .order_by(Chat.created_at.desc())
         .all()
@@ -77,7 +69,7 @@ def get_chat_list(user_id):
         {
             "chat_id": chat.chat_id,
             "topic": chat.topic,
-            "preview_message": get_chat_titles(chat.chat_id)
+            "preview_message": chat.message[:15] if chat.message else ""
         }
         for chat in chats
     ]
@@ -86,12 +78,13 @@ def get_chat_list(user_id):
 
 
 def get_chat_messages(chat_id):
-    """ 특정 chat_id의 모든 메시지를 가져오는 함수 """
+    """ 
+    ✅ 해당 chat_id의 모든 메시지를 가져오는 함수 
+    """
     messages = (
         db.session.query(ChatMessage)
         .filter(ChatMessage.chat_id == chat_id)
         .order_by(ChatMessage.msg_num)
         .all()
     )
-
     return [{"sender": msg.sender, "message": msg.message} for msg in messages]

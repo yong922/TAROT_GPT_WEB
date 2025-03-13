@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let sendButton = document.getElementById("send-button");
     let selectedTopic = ""; 
     let chatId = null;
-    let firstMessageSent = false;  // 첫 번째 메시지인지 여부
+    let firstMessageSent = false; 
 
 
     // ✅ 버튼 클릭 시 메시지 전송
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
     
-    // 🟢 메시지를 한 글자씩 출력하는 함수 (stream 방식)
+    // 🟢 메시지를 한 글자씩 출력하는 함수
     async function addMessageToChatBox(content, delay = 50, withButtons = false) {
         return new Promise(async (resolve) => {
             let messageDiv = document.createElement("div");
@@ -25,24 +25,24 @@ document.addEventListener("DOMContentLoaded", function () {
             let paragraph = document.createElement("p");
             messageDiv.appendChild(paragraph);
             chatBox.appendChild(messageDiv);
-            
+
             for (let i = 0; i < content.length; i++) {
                 paragraph.innerHTML += content[i];
                 await new Promise(res => setTimeout(res, delay)); // 글자마다 지연
                 chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 아래로 이동
             }
 
-            // ✅ 버튼이 필요한 경우, 메시지 내부에 버튼 추가
+            // 버튼이 필요한 경우, 메시지 내부에 버튼 추가
             if (withButtons) {
                 let buttonContainer = createButtonsForChat();
                 messageDiv.appendChild(buttonContainer);
             }
-    
+
             resolve(messageDiv); // 메시지 div 반환
         });
     }
 
-    // 🟢 버튼을 생성하는 함수 (단, messageDiv에 추가하도록 변경)
+    // 🟢 버튼을 생성하는 함수
     function createButtonsForChat() {
         let buttonContainer = document.createElement("div");
         buttonContainer.classList.add("button-container");
@@ -69,34 +69,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 🟢 버튼 클릭 시 실행되는 함수
     async function handleButtonClick(topic) {
+        selectedTopic = topic;
 
-        // 1. 서버에 topic 저장
+        // 버튼 비활성화 처리
+        document.querySelectorAll(".chat-button").forEach(button => {
+            button.disabled = true;
+        });
+
+        // 대화창 출력
+        await addMessageToChatBox(`좋아, ${selectedTopic}에 대해 이야기 해보자. 뭐가 궁금하니?`);
+
+        // topic 저장
         try {
-            const response = await fetch('/chat/topic_update', {
+            const response = await fetch('/chat/set_topic', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ topic: topic })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic })
             });
-
-            if (response.ok) {
-                // 2. 서버에 저장된 토픽 확인
-                const data = await response.json();
-                selectedTopic = data.topic;
-                console.log("Topic saved to server:", selectedTopic);
-
-                // 3. 선택된 토픽을 확인하고 메시지 추가
-                await addMessageToChatBox(`좋아, ${selectedTopic}에 대해 이야기 해보자. 뭐가 궁금하니?`);
-            } else {
-                console.error("Filed to save topic to server");
-            }
+    
+            if (!response.ok) throw new Error("토픽 저장 실패");
+            console.log("Topic successfully saved.");
         } catch (error) {
             console.error("Error occurred while saving topic:", error);
         }
     }
 
-    // 🟢 초기 메시지 표시 (stream 방식)
+
+    // 🟢 초기 메시지 표시
     async function displayBotMessageWithButtons() {
         await addMessageToChatBox("어서오너라. 오늘은 어떤 이야기를 나눠볼까? 아래에서 선택해보렴.🧓🏻☕", 50, true);
     }
@@ -153,7 +152,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 500);  // 0.5초 후 카드가 한꺼번에 나타남
     }
 
-    // ✅ chat_id를 가져오는 함수
+
+    // 🟢 chat_id를 가져오는 함수
     async function fetchChatId() {
         try {
             let response = await fetch("/chat/get_latest_chat_id");
@@ -166,9 +166,8 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("chat_id 가져오기 실패:", error);
         }
     }
-    
 
-    // ✅ 챗봇 응답을 DB에 저장하는 함수
+    // 🟢 챗봇 응답을 DB에 저장하는 함수
     async function saveBotResponse(chatId) {
         try {
             let response = await fetch("/chat/save_bot_response", {
@@ -184,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     
+    // 🟢 사용자 메시지 전송 함수
     async function sendMessage() {
         let message = messageInput.value.trim();
         if (!message) return;
@@ -192,37 +192,42 @@ document.addEventListener("DOMContentLoaded", function () {
         chatBox.innerHTML += `<div class="message user">${message}</div>`;
         messageInput.value = "";  // 입력창 초기화
 
-        try {
-            let cards, cardImagesUrl;
+        let cards, cardImagesUrl;
 
-            // ✅ 첫 번째 응답일 경우,
-            if (!firstMessageSent) {
-                firstMessageSent = true;  // 첫 번째 메시지 처리 후 플래그 설정
-                
-                // 서버에서 카드 3장과 이미지 URL을 가져옴
+        // ✅ 첫 번째 응답일 경우
+        if (!firstMessageSent) {
+            firstMessageSent = true;  
+            
+            try{
                 const response = await fetch("/chat/draw_tarot", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" }
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
                 });
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch tarot cards");
                 }
 
-                const cardData = await response.json();  // JSON 데이터 파싱
-                cards = cardData.cards;  // 뽑힌 카드 배열
-                cardImagesUrl = cardData.card_images_url;  // 카드 이미지 URL 객체
+                const cardData = await response.json();
+                cards = cardData.cards;
+                cardImagesUrl = cardData.card_images_url;
+
                 console.log("뽑힌 카드:", cards);
                 console.log("카드 URL:", cardImagesUrl);
 
                 displayTarotCards(cards, cardImagesUrl);
+            } catch (error) {
+                console.error("[ERROR] 타로 카드 가져오기 실패:", error);
+                return;  // 에러 발생 시 진행 중단 (응답 없이 종료)
             }
+        }
 
-            // ✅ 말풍선 생성 (초기 텍스트 없음)
-            let botMessage = document.createElement("div");
-            botMessage.classList.add("message", "bot");
-            chatBox.appendChild(botMessage);            
+        // ✅ 말풍선 생성 (초기 텍스트 없음)
+        let botMessage = document.createElement("div");
+        botMessage.classList.add("message", "bot");
+        chatBox.appendChild(botMessage);
 
+        try {
             // ✅ Flask에 POST 요청
             let response = await fetch("/chat/stream", {
                 method: "POST",
@@ -245,19 +250,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     let chunkText = decoder.decode(value, { stream: true });
                     fullResponse += chunkText;  // ✅ 기존 말풍선 안에 계속 추가
                     botMessage.innerHTML = fullResponse;  // ✅ 말풍선 내부 텍스트 갱신
-
                     ({ done, value } = await reader.read());
                 }
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
             await readChunks();
+
+            // chatId 가져오기
             if (!chatId) {
                 await fetchChatId();
             }
+
             await saveBotResponse(chatId);
         } catch (error) {
             console.error("Error:", error);
         }
-    };
+    }
 });
 

@@ -40,7 +40,6 @@ class TarotReader:
         # 대화 상태 
         self.conversation_state = {
             "is_card_drawn": False, # 카드를 뽑았는지 bool
-            "is_first_reading": True,
             "cards": None,          # 뽑힌 카드 list
             "card_keywords": None,  # 뽑힌 카드의 의미 dict
         }
@@ -69,7 +68,7 @@ class TarotReader:
         - 후속 질문이면 follow_up_prompt 사용
         - str + str으로 templates 생성
 
-        Args : is_first_reading (bool) 카드 뽑음 여부
+        Args : is_first_reading (bool) 처응 응답 여부
         Returns : ChatPromptTemplate(프롬프트 템플릿 객체)
         """
 
@@ -85,67 +84,29 @@ class TarotReader:
         )
 
     
-    def topic_update(self, topic):
-        """
-        ✅ 토픽 저장
-        """
-        self.conversation_state["topic"] = topic
-
-        return self.conversation_state["topic"]
-
     def draw_tarot_cards(self):
         """
         ✅ 22장의 메이저 아르카나 타로 카드 중 3장 무작위 뽑기
         """
-        tarot_cards = [
+        cards = [
             "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor", "The Hierophant",
             "The Lovers", "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice", "The Hanged Man",
             "Death", "Temperance", "The Devil", "The Tower", "The Star", "The Moon", "The Sun", "Judgement", "The World"
         ]
-        # 카드 정보 업데이트
-        self.conversation_state["cards"] = random.sample(tarot_cards, 3)
-        # 카드 뽑음 여부 True
-        # self.conversation_state["is_card_drawn"] = True
 
-        return self.conversation_state["cards"]  # ["카드이름"]
-
-
-    def card_images_url(self, cards):
-        """
-        ✅ self.conversation_state["cards"]에 든 카드 3장의 이미지 URL을 반환
-        """
-
-        base_url = "/static/imgs/tarot_front_images/"
-        static_folder = os.path.join(os.getcwd(), "app", "static", "imgs", "tarot_front_images") 
-        default_img = "/static/imgs/tarot_front_images/default.png"  # 기본
-
-        return {
-            card: f"{base_url}{card}.png"
-            if os.path.exists(os.path.join(static_folder, f"{card}.png"))
-            else default_img
-            for card in cards
-        }
-        
-
-    def card_keywords(self, cards):
-        """
-        ✅ 뽑은 카드의 의미를 담는 함수
-        - process_query()에서 사용
-
-        Args : cards (list) 뽑힌 카드 리스트
-        Return : dict
-        """
-        # 카드 키워드 업데이트
-        self.conversation_state["card_keywords"] = {card: TAROT_CARD_MEANINGS[card] for card in cards}
-
-        return self.conversation_state
+        selected_cards = random.sample(cards, 3)
+        self.conversation_state.update({
+                "cards": ', '.join(selected_cards),
+                "card_keywords": {card: TAROT_CARD_MEANINGS[card] for card in cards},
+            })
+        return selected_cards
 
 
-    def process_query(self, text, user_id):
+    def process_query(self, text, user_id, topic=None):
         """
         ✅ 사용자의 질문을 처리하고 대화 응답을 chunk단위로 반환하는 함수
 
-        - 첫 리딩이면 뽑은 카드로 카드 키워드 저장장
+        - 첫 리딩이면 카드를 뽑고 카드 키워드 저장
         - 후속 질문이면 기존 카드 정보를 유지하면서 답변 제공
 
         Args : 
@@ -155,36 +116,32 @@ class TarotReader:
             str : 모델이 생성한 타로 해석 (stream)
         """
 
-        # 1. 사용자 질문 저장
+        # 사용자 질문 저장
         self.memory.chat_memory.add_user_message(text)
 
-        # 2-1. 첫 리딩이면 : 고른 토픽과 뽑은 카드가 이미 저장된 상태
-        if self.conversation_state["is_first_reading"]:
-            # 카드 키워드 저장
-            self.card_keywords(self.conversation_state["cards"])
-            # 첫 리딩 판별 변수 업데이트
-            self.conversation_state["is_first_reading"] = False
-            # 프롬프트 생성
+        # 프롬프트 생성
+        if not self.conversation_state["is_card_drawn"]:
             prompt_template = self.create_prompt(is_first_reading=True)
-        # 2-2. 후속 리딩이면
+            self.conversation_state["is_card_drawn"] = True
+
         else:
             prompt_template = self.create_prompt(is_first_reading=False)
 
-        # 3. 모델 실행
+        # 모델 실행
         chain = RunnableSequence(
             prompt_template, 
             self.model,      
             StrOutputParser()  
         )
 
-        # 4. 응답 streaming
+        # 응답 streaming
         full_response = ""
         for chunk in chain.stream(input={
             "text": text,
-            "topic": self.conversation_state["topic"],
-            "cards": self.conversation_state["cards"],
-            "card_keywords": self.conversation_state["card_keywords"],
+            "topic": topic,
             "chat_history": self.memory.chat_memory.messages,
+            "cards": self.conversation_state["cards"],
+            "card_keywords": self.conversation_state["card_keywords"]
         }):
             yield chunk   
             time.sleep(0.1)
@@ -192,6 +149,7 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
+
 
 
 
