@@ -4,10 +4,9 @@
     </button>
     <ul class="chat-list">
         {% for chat in chat_list %}
-        <li class="chat-item" data-chat-id="{{ chat.chat_id }}">
-            {% set chat_icon = chat_icon_list | selectattr('topic', 'equalto', chat.topic) | first %}
-            <span class="chat-icon"><i class="fa-solid {{ chat_icon.icon }}"></i></span>
-            <span class="chat-title">{{ chat.chat_id}} {{ chat.preview_message }}</span>
+        <li class="chat-item" data-chat-id="{{ chat.chat_id }}" data-topic="{{ chat.topic }}">
+            <span class="chat-icon"><i class="fa-solid"></i></span>
+            <span class="chat-title">{{ chat.preview_message }}</span>
         </li>
         {% else %}
         <li>채팅 목록이 없습니다.</li>
@@ -16,7 +15,8 @@
     <div class="user-info-container">
         <span class="user-info">
             <i class="fa-solid fa-circle-user"></i>
-                {{ username }}님</span>
+            {{ user_name }}님
+        </span>
         <a href="/" class="logout-btn">
             <i class="fa-solid fa-right-from-bracket"> LOGOUT</i>
         </a>

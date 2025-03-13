@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, Response, request
 from flask_login import login_required, current_user
 from app.services.tarot_service import TarotReader
-from app.services.history_service import create_chat, save_message, get_latest_chat_id
+from app.services.history_service import create_chat, save_message, get_latest_chat_id, get_chat_list, get_chat_messages
 from app.services.image_service import get_images_url
 from . import chat_bp
 
@@ -11,20 +11,18 @@ tarot_reader = TarotReader()
 @chat_bp.route("/", methods=['GET'])
 @login_required
 def tarot_chat():
-    chat_icon_list = [
-        {'topic': '애정운', 'icon': 'fa-heart'},
-        {'topic': '금전운', 'icon': 'fa-coins'},
-        {'topic': '취업운', 'icon': 'fa-briefcase'},
-        {'topic': '건강운', 'icon': 'fa-medkit'},
-    ]
-    chat_list = [
-        {'topic': '애정운', 'title': '애정운대화1'}, 
-        {'topic': '금전운', 'title': '금전운대화2'}, 
-        {'topic': '취업운', 'title': '취업운대화3'},
-        {'topic': '건강운', 'title': '건강운대화4'},
-        ]
-    username = 'qwer'
-    return render_template("tarot_chat.html", chat_list=chat_list, username=username, chat_icon_list=chat_icon_list)
+    """ 
+    ✅ 채팅 페이지 메인 API 
+    """
+    user_id = current_user.id
+    user_name = current_user.nickname
+    chat_list = get_chat_list(user_id)
+
+    print("DEBUG: chat_list =", chat_list)
+
+    return render_template("tarot_chat.html", 
+                           chat_list=chat_list,
+                           user_name = user_name)
 
 
 @chat_bp.route("/set_topic", methods=["POST"])
@@ -38,7 +36,6 @@ def set_topic():
         return jsonify({"status": "error", "message": "토픽 정보가 없습니다."}), 400
 
     tarot_reader.conversation_state["topic"] = data["topic"]
-    # print(">>>>>",tarot_reader.conversation_state["topic"])
     
     return jsonify({"status": "success", "message": "토픽이 설정되었습니다."}), 200
 
@@ -46,16 +43,10 @@ def set_topic():
 @chat_bp.route("/draw_tarot", methods=["POST"])
 def draw_tarot():
     """ 
-    ✅ 타로 카드를 랜덤으로 뽑고 이미지 URL을 반환하는 API 
+    ✅ 타로 카드를 뽑고 이미지 URL을 반환하는 API 
     """
-
-    # 카드 뽑기
     drawn_cards = tarot_reader.draw_tarot_cards()
-
-    # 이미지 URL 가져오기
     card_images_url = get_images_url(drawn_cards)
-
-    print(card_images_url)
 
     return jsonify({ "cards": drawn_cards, "card_images_url": card_images_url})
 
@@ -118,4 +109,11 @@ def save_bot_response():
     return jsonify({"status": "success", "message": "Bot response saved."})
 
 
+@chat_bp.route("/<int:chat_id>", methods=["GET"])
+def fetch_chat_messages(chat_id):
+    """ 
+    ✅ 특정 대화의 메시지를 가져오는 API 
+    """
+    messages = get_chat_messages(chat_id)
+    return jsonify(messages)
 

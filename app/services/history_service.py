@@ -33,3 +33,57 @@ def get_latest_chat_id(user_id):
     """
     last_chat = Chat.query.filter_by(user_id=user_id).order_by(Chat.created_at.desc()).first()
     return last_chat.chat_id if last_chat else None
+
+
+################### 사이드바 #####################
+
+def get_chat_list(user_id):
+    """
+    ✅ 사용자의 모든 대화 목록을 가져오는 함수
+    """
+    subquery = (
+        db.session.query(
+            ChatMessage.chat_id,
+            db.func.min(ChatMessage.msg_num).label("first_msg_num")
+        )
+        .group_by(ChatMessage.chat_id)
+        .subquery()
+    )
+
+    chats = (
+        db.session.query(
+            Chat.chat_id,
+            Chat.topic,
+            ChatMessage.message
+        )
+        .join(subquery, Chat.chat_id == subquery.c.chat_id)
+        .join(ChatMessage, (ChatMessage.chat_id == subquery.c.chat_id) & (ChatMessage.msg_num == subquery.c.first_msg_num))
+        .filter(Chat.user_id == user_id)
+        .order_by(Chat.created_at.desc())
+        .all()
+    )
+
+    chat_list = [
+        {
+            "chat_id": chat.chat_id,
+            "topic": chat.topic,
+            "preview_message": chat.message[:15] if chat.message else ""
+        }
+        for chat in chats
+    ]
+    
+    return chat_list
+
+
+def get_chat_messages(chat_id):
+    """ 
+    ✅ 해당 chat_id의 모든 메시지를 가져오는 함수 
+    """
+    messages = (
+        db.session.query(ChatMessage)
+        .filter(ChatMessage.chat_id == chat_id)
+        .order_by(ChatMessage.msg_num)
+        .all()
+    )
+
+    return [{"sender": msg.sender, "message": msg.message} for msg in messages]

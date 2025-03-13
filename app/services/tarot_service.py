@@ -97,8 +97,6 @@ class TarotReader:
                 "cards": ', '.join(selected_cards),
                 "card_keywords": {card: TAROT_CARD_MEANINGS[card] for card in cards},
             })
-        print(">>>>model11", selected_cards)
-        print(">>>>model22", self.conversation_state["cards"])
         return selected_cards
 
 
