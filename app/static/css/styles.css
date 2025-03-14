@@ -153,15 +153,15 @@ footer {
   width: 10px; /* 스크롤바 너비 */
 }  
 .chat-box::-webkit-scrollbar-track {
-  background: #a48dba; /* 스크롤바 트랙 색 */
-  border-radius: 10px;
+  display: none;  /* 스크롤바 트랙 숨김 */
+  margin: 10px 0;
 }
-.chat-box::-webkit-scrollbar-thumb {
-  background: #66319b; /* 스크롤바 색 */
+.chat-box::-webkit-scrollbar-thumb {  /* 스크롤바 색 */
+  background: #7f47bb;
   border-radius: 10px;
 }
 .chat-box::-webkit-scrollbar-thumb:hover {
-  background: #8549c6; /* 마우스 호버 시 색 변경 */
+  background: #ab85ca;
 }
 
 /* 채팅 메시지 */
@@ -345,7 +345,6 @@ footer {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
-
 /* 열린 상태 */
 .sidebar.open {
   transform: translateX(0);
@@ -355,7 +354,7 @@ footer {
   transform: translateX(-100%);
 }
 
-/* 닫기 버튼 */
+/* 사이드바 닫기 버튼 */
 .close-btn {
   background: rgba(0, 0, 0, 0);
   color: #dedede;
@@ -391,6 +390,22 @@ footer {
   list-style: none;
   padding: 0;
   margin: 20px 0;
+  max-height: calc(100vh - 180px); /* 전체 높이에서 사용자 정보 컨테이너 공간 제외 */
+  overflow-y: auto; /* 스크롤 활성화 */
+}
+.chat-list::-webkit-scrollbar {
+  width: 9px; /* 스크롤바 너비 */
+}  
+.chat-list::-webkit-scrollbar-track {
+  display: none;  /* 스크롤바 트랙 숨김 */
+  margin: 10px 0;
+}
+.chat-list::-webkit-scrollbar-thumb {  /* 스크롤바 색 */
+  background: #7f47bb;
+  border-radius: 10px;
+}
+.chat-list::-webkit-scrollbar-thumb:hover {
+  background: #ab85ca;
 }
 
 /* 대화 목록 - 대화 아이템 */
