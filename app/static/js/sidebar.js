@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggle-sidebar");
     const openButton = document.getElementById("open-sidebar");
+    const newChatButton = document.getElementById("new-chat");
+    const deleteButtons = document.querySelectorAll(".delete-btn");
     const chatItems = document.querySelectorAll(".chat-item");  // 채팅 아이템 목록
     const chatBox = document.getElementById("chat-box");  // 채팅 메시지 출력 영역
     const messageInputArea = document.querySelector(".message-input-area"); // 입력창 + 버튼 포함 영역
@@ -66,6 +68,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function confirmDelete(chatId) {
+        if (confirm("채팅을 삭제하시겠습니까?")) {
+            console.log("채팅 삭제 -> 확인받음")
+            fetch(`/chat/delete_chat/${chatId}`, { method: "DELETE" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("삭제되었습니다.");
+                        location.reload(); // 삭제 후 새로고침
+                        console.log("삭제 성공");
+                    } else {
+                        alert("삭제 실패!");
+                        console.log("data:", data);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    }
+
     // 🖱️ 닫기 버튼 클릭 시 사이드바 닫기
     toggleButton.addEventListener("click", function () {
         sidebar.classList.remove("open");
@@ -77,4 +98,19 @@ document.addEventListener("DOMContentLoaded", function () {
         sidebar.classList.remove("closed");
         sidebar.classList.add("open");
     });
+
+    // 🖱️ 삭제 버튼 클릭 시 채팅 삭제
+    deleteButtons.forEach(deleteButton => {
+        deleteButton.addEventListener("click", function(event) {
+            event.stopPropagation();  // chat-item 클릭 이벤트 방지
+            const chatItem = this.closest(".chat-item");
+            const chatId = chatItem.getAttribute("data-chat-id");
+            confirmDelete(chatId);
+        });
+    })
+
+    // 🖱️ 새 채팅 버튼 클릭 시 새로고침
+    newChatButton.addEventListener("click", function() {
+        location.reload();
+    })
 });
