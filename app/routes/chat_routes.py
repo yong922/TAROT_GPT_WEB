@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, Response, request
 from flask_login import login_required, current_user
 from app.services.tarot_service import TarotReader
-from app.services.history_service import create_chat, save_message, get_latest_chat_id, get_chat_list, get_chat_messages
+from app.services.history_service import create_chat, save_message, get_latest_chat_id, get_chat_list, get_chat_messages, delete_chat_from_db
 from app.services.image_service import get_images_url
 from . import chat_bp
 
@@ -110,8 +110,15 @@ def save_bot_response():
 @chat_bp.route("/<int:chat_id>", methods=["GET"])
 def fetch_chat_messages(chat_id):
     """ 
-    ✅ 특정 대화의 메시지를 가져오는 API 
+    ✅ 특정 대화(chat_id)의 메시지를 가져오는 API 
     """
     messages = get_chat_messages(chat_id)
     return jsonify(messages)
 
+@chat_bp.route("/delete_chat/<int:chat_id>", methods=["DELETE"])
+def delete_chat(chat_id):
+    """ 
+    ✅ 특정 대화(chat_id) 기록을 삭제하는 API 
+    """
+    success = delete_chat_from_db(chat_id)
+    return jsonify({"success": success})
