@@ -151,17 +151,17 @@ footer {
 }
 .chat-box::-webkit-scrollbar {
   width: 10px; /* 스크롤바 너비 */
-}
+}  
 .chat-box::-webkit-scrollbar-track {
   background: #a48dba; /* 스크롤바 트랙 색 */
   border-radius: 10px;
 }
 .chat-box::-webkit-scrollbar-thumb {
-  background: #6012b3; /* 스크롤바 색 */
+  background: #66319b; /* 스크롤바 색 */
   border-radius: 10px;
 }
 .chat-box::-webkit-scrollbar-thumb:hover {
-  background: #723bae; /* 마우스 호버 시 색 변경 */
+  background: #8549c6; /* 마우스 호버 시 색 변경 */
 }
 
 /* 채팅 메시지 */
