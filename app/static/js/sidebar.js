@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "재물운": "fa-coins",
         "학업운": "fa-briefcase",
         "건강운": "fa-medkit",
-        "미래운": "fa-crystal-ball"
+        // "미래운": "fa-star",
+        "미래운": "fa-moon"
     };
 
     // ✅ 모든 채팅 아이템에 아이콘 추가
