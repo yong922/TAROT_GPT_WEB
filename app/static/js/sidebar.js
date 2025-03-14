@@ -10,9 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const chatIconList = {
         "애정운": "fa-heart",
         "재물운": "fa-coins",
-        "학업운": "fa-briefcase",
-        "건강운": "fa-medkit",
-        // "미래운": "fa-star",
+        "학업운": "fa-pencil",
+        "건강운": "fa-dumbbell",
         "미래운": "fa-moon"
     };
 
