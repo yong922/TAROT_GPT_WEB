@@ -9,6 +9,31 @@ body {
   background-size: cover;
   background-position: center;
   font-family: 'Arial', sans-serif;
+  overflow: hidden; /* 배경이 화면을 벗어나지 않도록 설정 */
+  position: relative;
+}
+/* 배경 위에 별 효과 오버레이 */
+body::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: url('../imgs/bg-smallstars.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
+  animation: rotateStars 900s linear infinite;
+}
+
+@keyframes rotateStars {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 /* 카드 스타일 */
@@ -172,6 +197,7 @@ footer {
   border-radius: 10px;
   word-wrap: break-word;
   position: relative;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 /* 사용자 말풍선 */
 .message.user {
@@ -190,31 +216,6 @@ footer {
 .message.bot p {
   margin-bottom: 1px;
 }
-
-/* 말풍선 꼬리
-.message.user::after,
-.message.bot::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-}
-/* 사용자 말풍선 꼬리 위치 */
-/* .message.user::after {
-  top: 50%;
-  right: -10px;
-  border-top: 10px solid rgb(153, 77, 207);
-  transform: translateY(-50%);
-}
-/* 챗봇 말풍선 꼬리 위치 */
-/* .message.bot::after {
-  top: 50%;
-  left: -10px;
-  border-top: 10px solid rgb(66, 37, 86);
-  transform: translateY(-50%);
-} * */
 
 
 /* 메시지 입력 필드 */
@@ -341,7 +342,10 @@ footer {
   background-color: #5c397d;
   color: white;
   transition: transform 0.3s ease-in-out;
-  padding: 20px;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  padding-left: 15px;
+  padding-right: 10px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
@@ -354,6 +358,12 @@ footer {
   transform: translateX(-100%);
 }
 
+/* 사이드바 상단 */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;  /* 버튼들 양 끝 정렬 */
+  align-items: center;
+}
 /* 사이드바 닫기 버튼 */
 .close-btn {
   background: rgba(0, 0, 0, 0);
@@ -366,13 +376,28 @@ footer {
   text-align: left;
 }
 .close-btn:hover {
-  background: #6e4b8f;
+  background: #7b4a99;
+}
+/* 새 채팅 버튼*/
+.new-chat-btn {
+  background-color: #5c397d;  /* 기존 사이드바와 같은 색상 */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: auto;
+  transition: background-color 0.3s ease;
+}
+.new-chat-btn:hover {
+  background-color: #7b4a99;
 }
 
 /* 사이드바 열기 버튼 */
 .sidebar-btn {
   position: fixed;
-  left: 20px;
+  left: 10px;
   top: 20px;
   background: rgba(0, 0, 0, 0);
   color: #dedede;
@@ -384,24 +409,36 @@ footer {
 .sidebar-btn:hover{
   background: #555;
 }
+.chat-page-title {
+  position: fixed;
+  left: 60px;
+  top: 20px;
+  font-size: 30px;
+  font-family: "Bodoni Moda", serif;
+  /* font-family: "Italiana", sans-serif; */
+  font-weight: bold;
+  color: white;
+}
 
 /* 대화 목록 */
 .chat-list {
   list-style: none;
-  padding: 0;
+  padding-left: 0px;
+  padding-right: 10px;
   margin: 20px 0;
   max-height: calc(100vh - 180px); /* 전체 높이에서 사용자 정보 컨테이너 공간 제외 */
   overflow-y: auto; /* 스크롤 활성화 */
 }
+/* 대화 목록 스크롤바 */
 .chat-list::-webkit-scrollbar {
-  width: 9px; /* 스크롤바 너비 */
+  width: 9px;
 }  
 .chat-list::-webkit-scrollbar-track {
-  display: none;  /* 스크롤바 트랙 숨김 */
+  display: none;  /* 스크롤바 트랙 */
   margin: 10px 0;
 }
-.chat-list::-webkit-scrollbar-thumb {  /* 스크롤바 색 */
-  background: #7f47bb;
+.chat-list::-webkit-scrollbar-thumb {  
+  background: #7f47bb;  /* 스크롤바 */
   border-radius: 10px;
 }
 .chat-list::-webkit-scrollbar-thumb:hover {
@@ -411,7 +448,9 @@ footer {
 /* 대화 목록 - 대화 아이템 */
 .chat-item {
   display: flex;
-  align-items: left;
+  align-items: flex-start;
+  /* justify-content: space-between; */
+  position: relative;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
@@ -422,21 +461,40 @@ footer {
   background: #6e4b8f;
 }
 
-/* 대화 아이콘과 제목 */
+/* 대화 아이콘 */
 .chat-icon {
   margin-right: 15px;
 }
 .chat-icon i {
   font-size: 20px; /* 원하는 크기로 조절 */
 }
-
+/* 대화 제목 */
 .chat-title {
-  /* font-weight: bold; */
   color: rgb(245, 245, 245);
   font-size: 15px;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 .chat-title:hover {
   color: #fff;
+}
+
+/* 삭제 버튼 기본적으로 숨김 */
+.delete-btn {
+  display: none; /* 기본적으로 숨김 */
+  color: #ddd;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+  margin-left: auto; /* 오른쪽 정렬 */
+}
+/* 대화 아이템 hover 시 삭제 버튼 표시 */
+.chat-item:hover .delete-btn {
+  display: inline-block; /* hover 시 보이게 설정 */
+}
+/* 삭제 버튼 hover 시 색상 변경 */
+.delete-btn:hover {
+  color: #ff5c5c;
 }
 
 /* 사용자 정보 컨테이너 (로그아웃 버튼 포함) */
