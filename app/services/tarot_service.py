@@ -75,7 +75,7 @@ class TarotReader:
         system_template = self.base_template + (self.first_reading_prompt if is_first_reading else self.follow_up_prompt)
 
         return ChatPromptTemplate(
-            input_variables=["text", "chat_history", "cards", "topic", "card_keywords", "prompt_type"],
+            input_variables=["text", "chat_history", "cards", "topic", "card_keywords"],
             messages=[
                 SystemMessagePromptTemplate.from_template(system_template),
                 MessagesPlaceholder(variable_name="chat_history"),
@@ -149,8 +149,3 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
-
-
-
-
-        

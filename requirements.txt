@@ -1,0 +1,11 @@
+ipykernel
+python-dotenv
+langchain
+langchain-openai
+flask
+flask_login
+flask_sqlalchemy
+pymysql
+flask_migrate
+flask-wtf
+wtforms
