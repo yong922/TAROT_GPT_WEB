@@ -152,5 +152,5 @@ class TarotReader:
 
 
 
-
+        
         
