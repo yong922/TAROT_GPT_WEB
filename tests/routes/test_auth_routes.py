@@ -15,7 +15,7 @@ def mock_current_user():
     return mock_user
 
 # 로그인 테스트
-def test_login_success(client, mocker):
+def test_login_success(client, mocker, mock_current_user):
     """
     ✅ 로그인 성공 시 정상적으로 로그인 후, 채팅 페이지로 리디렉션 되는지 확인
     """
