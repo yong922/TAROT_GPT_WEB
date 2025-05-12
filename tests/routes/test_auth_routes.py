@@ -8,10 +8,14 @@ def mock_current_user():
     mock_user = MagicMock()
     mock_user.id = "testuser"
     mock_user.nickname = "테스트유저"
+    mock_user.is_authenticated = True
+    mock_user.is_active = True
+    mock_user.is_anonymous = False
+    mock_user.get_id.return_value = "testuser"
     return mock_user
 
 # 로그인 테스트
-def test_login_success(client, mocker):
+def test_login_success(client, mocker, mock_current_user):
     """
     ✅ 로그인 성공 시 정상적으로 로그인 후, 채팅 페이지로 리디렉션 되는지 확인
     """
