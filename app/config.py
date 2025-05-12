@@ -13,5 +13,5 @@ class Config:
 
 class TestingConfig:
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"  # 테스트용 
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:" 
     WTF_CSRF_ENABLED = False
