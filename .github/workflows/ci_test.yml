@@ -2,9 +2,10 @@ name: Run Tests on Push to Main
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    # branches: [main]
+    branches: [ci_test_branch]
+  # pull_request:
+    # branches: [main]
 
 jobs:
   test:
@@ -22,7 +23,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('app/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
