@@ -8,12 +8,10 @@ class Config:
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
     SECRET_KEY = os.getenv('SECRET_KEY')
+    WTF_CSRF_ENABLED = False  # CSRF 보호 비활성화 (Postman 테스트용)
 
-    # CSRF 보호 비활성화 (Postman 테스트용)
+class TestingConfig:
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:" 
     WTF_CSRF_ENABLED = False
-
-class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # 메모리 DB를 사용하여 테스트 환경에서 데이터베이스 초기화
-    TESTING = True  # Flask의 테스트 모드 활성화

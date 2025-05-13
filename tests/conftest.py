@@ -1,23 +1,16 @@
 import pytest
 from app import create_app, db
 from app.models import User, Chat, ChatMessage
+from app.config import TestingConfig
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 
-'''
-✅ 테스트 환경 설정
-- TestingConfig를 사용하여 테스트 환경에서 메모리 DB를 사용하도록 설정
-'''
 @pytest.fixture
 def app():
-    app = create_app(config_name='testing')
-    app.config.update({
-        "SERVER_NAME": "localhost.localdomain",  # ← URL 생성 문제 해결
-        "TESTING": True,
-        "WTF_CSRF_ENABLED": False  # 폼 관련 테스트 편의
-    })
+    app = create_app(TestingConfig)
+    app.secret_key = 'test_secret_key'
     with app.app_context():
-        db.create_all()  # 데이터베이스 초기화
+        db.create_all()
         yield app
         db.session.remove()
         db.drop_all()
@@ -30,14 +23,11 @@ def client(app):
 @pytest.fixture
 def init_database(app):
     '''테스트용 초기 데이터 삽입'''
-
     user = User(id="testuser", pw=generate_password_hash("testpw"), nickname="cutty")
     db.session.add(user)
     db.session.commit()
-
     # history_service 테스트를 위한 데이터 반환
     return {"user_id": user.id}
-
 
 @pytest.fixture
 def history_test_data(app, init_database):

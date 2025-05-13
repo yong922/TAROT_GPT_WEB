@@ -12,14 +12,13 @@ csrf = CSRFProtect()
 
 def create_app(config_name='default'):
     app = Flask(__name__)
-
-    # 환경에 맞는 설정 로드
-    if config_name == 'testing':
-        app.config.from_object('app.config.TestingConfig')  # 테스트 설정 로드
-    else:
-        app.config.from_object('app.config.Config')  # 기본 설정 로드
-    csrf.init_app(app)
     
+    if config_name == 'testing':
+        app.config.from_object('app.config.TestingConfig') 
+    else:
+        app.config.from_object('app.config.Config')
+        
+    csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
 
