@@ -17,11 +17,13 @@ def app():
 
 @pytest.fixture
 def client(app):
+    ''' Flask 테스트 클라이언트 생성 '''
     return app.test_client()
 
 @pytest.fixture
 def init_database(app):
-    user = User(id="testuser", pw=generate_password_hash("testpw"), nickname="Tester")
+    '''테스트용 초기 데이터 삽입'''
+    user = User(id="testuser", pw=generate_password_hash("testpw"), nickname="cutty")
     db.session.add(user)
     db.session.commit()
     # history_service 테스트를 위한 데이터 반환

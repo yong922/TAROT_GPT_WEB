@@ -10,7 +10,6 @@ def mock_current_user():
     mock_user.nickname = "테스트유저"
     return mock_user
 
-
 def test_chat_page_loads(client, mock_current_user):
     """
     ✅ /chat/ 페이지가 로그인된 유저에게 정상적으로 열리는지 확인
@@ -24,7 +23,6 @@ def test_chat_page_loads(client, mock_current_user):
         response = client.get("/chat/")
         assert response.status_code == 200
         assert "테스트유저" in response.get_data(as_text=True)
-
 
 def test_set_topic_updates_state(client):
     """ 
@@ -40,7 +38,6 @@ def test_set_topic_updates_state(client):
     data = response.get_json()
     assert data["status"] == "success"
     assert data["message"] == "토픽이 설정되었습니다."
-
 
 def test_draw_tarot_returns_cards(client):
     """
@@ -80,7 +77,6 @@ def test_get_latest_chat(client, mock_current_user):
         assert response.status_code == 200
         assert data["chat_id"] == 42
 
-
 @pytest.mark.parametrize(
     "chat_id_key, expected_status, expected_count, expected_messages, description", [
         ("chat1_id", 200, 2, [
@@ -91,7 +87,7 @@ def test_get_latest_chat(client, mock_current_user):
         ("empty_chat_id", 200, 0, [], "존재하는 chat_id - 메시지 없음")
     ]
 )
-def test_fetch_chat_messages_parametrize(client,history_test_data, empty_chat, 
+def test_fetch_chat_messages_parametrize(client, history_test_data, empty_chat, 
                                          chat_id_key, expected_status, expected_count, 
                                          expected_messages, description):
     """
@@ -100,6 +96,7 @@ def test_fetch_chat_messages_parametrize(client,history_test_data, empty_chat,
     2. 존재하지 않는 chat_id
     3. 존재하는 chat_id - 메시지 없음
     """
+    # 테스트 케이스에 따른 chat_id 설정
     chat_id_map = {
         "chat1_id": history_test_data["chat1_id"],
         "non_existent_id": 9999,
@@ -114,10 +111,10 @@ def test_fetch_chat_messages_parametrize(client,history_test_data, empty_chat,
     assert isinstance(data, list), f"응답이 리스트가 아님: {description}"
     assert len(data) == expected_count, f"메시지 수 불일치: {description}"
 
+    # 메시지 내용 검증 (메시지가 있는 경우만)
     for i, expected_msg in enumerate(expected_messages):
         assert data[i]["sender"] == expected_msg["sender"], f"sender 불일치: {description}"
         assert data[i]["message"] == expected_msg["message"], f"message 불일치: {description}"
-
 
 def test_delete_chat_success(client):
     """
@@ -130,7 +127,6 @@ def test_delete_chat_success(client):
         assert response.status_code == 200
         assert data["success"] is True
 
-
 def test_save_bot_response_empty_chat_history(client):
     """
     ✅ chat_history가 비어있을 때 'empty' 반환하는지 테스트
@@ -142,7 +138,6 @@ def test_save_bot_response_empty_chat_history(client):
         assert response.status_code == 200
         assert data["status"] == "empty"
         assert data["message"] == "No chat history found."
-
 
 def test_save_bot_response_success(client):
     """

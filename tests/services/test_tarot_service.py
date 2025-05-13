@@ -1,19 +1,9 @@
-<<<<<<< HEAD
 from app.services.tarot_service import TarotReader 
 from langchain.prompts import ChatPromptTemplate
 from unittest.mock import patch, MagicMock
 
-
-# =================== 유닛 테스트 ====================
-
+# 유닛 테스트
 class TestTarotReaderUnits:
-=======
-import pytest
-from app.services.tarot_service import TarotReader 
-from langchain.prompts import ChatPromptTemplate
-
-class TestTarotReader:
->>>>>>> origin/main
     def test_init(self):
         """TarotReader 초기화 테스트"""
         reader = TarotReader()
@@ -79,17 +69,14 @@ class TestTarotReader:
         expected_inputs = {"text", "chat_history", "cards", "topic", "card_keywords"}
         assert set(prompt.input_variables) == expected_inputs
 
-<<<<<<< HEAD
 
-
-# ==================== 통합 테스트 =====================
+#  테스트
 class TestTarotReaderIntegration:
     @patch('app.services.tarot_service.RunnableSequence')
     @patch('app.services.tarot_service.StrOutputParser')
     @patch('app.services.tarot_service.ChatOpenAI')
     def test_process_query_first_time(self, mock_chat_openai, mock_str_parser, mock_runnable_sequence):
         """첫 번째 쿼리 처리 통합 테스트"""
-        
         stream_chunks = ["이것은 ", "테스트 ", "응답입니다."]
         mock_chain = MagicMock()
         
@@ -123,7 +110,6 @@ class TestTarotReaderIntegration:
     @patch('app.services.tarot_service.ChatOpenAI')
     def test_process_query_follow_up(self, mock_chat_openai, mock_str_parser, mock_runnable_sequence):
         """후속 쿼리 처리 통합 테스트"""
-        
         stream_chunks = ["후속 ", "테스트 ", "응답입니다."]
         mock_chain = MagicMock()
 
@@ -149,5 +135,3 @@ class TestTarotReaderIntegration:
         assert responses == stream_chunks
         mock_create_prompt.assert_called_once_with(is_first_reading=False)
         assert reader.conversation_state["cards"] == prev_cards
-=======
->>>>>>> origin/main
