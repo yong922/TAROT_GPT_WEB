@@ -88,3 +88,26 @@ def get_chat_messages(chat_id):
         .all()
     )
     return [{"sender": msg.sender, "message": msg.message} for msg in messages]
+
+def delete_chat_from_db(chat_id):
+    """
+    ✅ 주어진 chat_id의 채팅과 해당 채팅의 모든 메시지를 삭제하는 함수
+    """
+    try:
+        # chat_id 존재 여부 확인
+        chat_exists = Chat.query.get(chat_id)
+        if not chat_exists:
+            return False
+        
+        # chat_id 기록 삭제
+        chat_message_deleted = ChatMessage.query.filter_by(chat_id=chat_id).delete()
+        chat_deleted = Chat.query.filter_by(chat_id=chat_id).delete()
+
+        db.session.commit()
+
+        # 최종적으로 삭제가 되었는지 확인
+        return chat_deleted > 0 and chat_message_deleted >=0
+    except Exception as e:
+        db.session.rollback()
+        print(f"삭제 중 오류 발생: {e}")
+        return False

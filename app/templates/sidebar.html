@@ -1,12 +1,22 @@
 <div id="sidebar" class="sidebar open">
-    <button id="toggle-sidebar" class="close-btn">
-        <i class="fa-solid fa-bars"></i>
-    </button>
+    <div class="sidebar-header">
+        <button id="toggle-sidebar" class="close-btn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <button id="new-chat" class="new-chat-btn">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <!-- <span class="new-chat-text">새 채팅</span> -->
+        </button>
+    </div>
+
     <ul class="chat-list">
         {% for chat in chat_list %}
         <li class="chat-item" data-chat-id="{{ chat.chat_id }}" data-topic="{{ chat.topic }}">
             <span class="chat-icon"><i class="fa-solid"></i></span>
             <span class="chat-title">{{ chat.preview_message }}</span>
+            <span class="delete-btn">
+                <i class="fa-solid fa-trash"></i>
+            </span>
         </li>
         {% else %}
         <li>채팅 목록이 없습니다.</li>
@@ -25,4 +35,5 @@
 <button id="open-sidebar" class="sidebar-btn">
     <i class="fa-solid fa-bars"></i>
 </button>
+<span class="chat-page-title">Tarot Nana</span>
 <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>

@@ -2,4 +2,13 @@
 .env
 __pycache__/
 *.log
+<<<<<<< HEAD
 .vscode/
+=======
+chat_test/
+test.py
+image_test/
+tarot_service_ver1.py
+chat_ver1.js
+templates_save.py
+>>>>>>> origin/main

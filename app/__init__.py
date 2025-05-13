@@ -10,9 +10,13 @@ migrate = Migrate()
 csrf = CSRFProtect()
 
 
-def create_app(config_class=Config):
+def create_app(config_name='default'):
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    
+    if config_name == 'testing':
+        app.config.from_object('app.config.TestingConfig') 
+    else:
+        app.config.from_object('app.config.Config')  
     csrf.init_app(app)
 
     db.init_app(app)

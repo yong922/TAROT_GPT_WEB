@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from app.services.tarot_service import TarotReader 
 from langchain.prompts import ChatPromptTemplate
 from unittest.mock import patch, MagicMock
@@ -6,6 +7,13 @@ from unittest.mock import patch, MagicMock
 # =================== 유닛 테스트 ====================
 
 class TestTarotReaderUnits:
+=======
+import pytest
+from app.services.tarot_service import TarotReader 
+from langchain.prompts import ChatPromptTemplate
+
+class TestTarotReader:
+>>>>>>> origin/main
     def test_init(self):
         """TarotReader 초기화 테스트"""
         reader = TarotReader()
@@ -71,6 +79,7 @@ class TestTarotReaderUnits:
         expected_inputs = {"text", "chat_history", "cards", "topic", "card_keywords"}
         assert set(prompt.input_variables) == expected_inputs
 
+<<<<<<< HEAD
 
 
 # ==================== 통합 테스트 =====================
@@ -140,3 +149,5 @@ class TestTarotReaderIntegration:
         assert responses == stream_chunks
         mock_create_prompt.assert_called_once_with(is_first_reading=False)
         assert reader.conversation_state["cards"] == prev_cards
+=======
+>>>>>>> origin/main
