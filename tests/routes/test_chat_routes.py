@@ -64,7 +64,6 @@ def test_draw_tarot_returns_cards(client):
             "The High Priestess": "/static/imgs/tarot_front_images/The High Priestess.png"
         }
 
-
 def test_get_latest_chat(client, mock_current_user):
     """ 
     ✅ 가장 최근의 chat_id 조회

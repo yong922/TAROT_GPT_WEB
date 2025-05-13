@@ -1,8 +1,0 @@
-.idea
-.vscode
-.git
-.gitignore
-*.log
-.venv
-.pytest_cache/
-tests/
