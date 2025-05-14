@@ -3,22 +3,18 @@ from app.models import db, User
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
-from app.config import Config, TestingConfig
+from app.config import Config
 
 login_manager = LoginManager()
 migrate = Migrate()
 csrf = CSRFProtect()
 
-
 def create_app(config_name='default'):
     app = Flask(__name__)
     
-    if config_name == 'testing':
-        app.config.from_object('app.config.TestingConfig') 
-    else:
-        app.config.from_object('app.config.Config')
-        
+    app.config.from_object(Config)
     csrf.init_app(app)
+    
     db.init_app(app)
     migrate.init_app(app, db)
 

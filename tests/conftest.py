@@ -1,14 +1,16 @@
 import pytest
+import os
 from app import create_app, db
 from app.models import User, Chat, ChatMessage
-from app.config import TestingConfig
+from app.config import Config
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 
+os.environ["APP_ENV"] = "test"
+
 @pytest.fixture
 def app():
-    app = create_app(TestingConfig)
-    app.secret_key = 'test_secret_key'
+    app = create_app(Config)
     with app.app_context():
         db.create_all()
         yield app
