@@ -1,8 +1,9 @@
-.idea
 .vscode
-.git
+.git/
 .gitignore
+.github/
 *.log
 .venv
 .pytest_cache/
 tests/
+.env

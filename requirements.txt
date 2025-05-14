@@ -9,5 +9,4 @@ pymysql
 flask_migrate
 flask-wtf
 wtforms
-cryptography
 pytest
