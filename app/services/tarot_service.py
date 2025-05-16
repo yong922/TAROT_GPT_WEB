@@ -1,7 +1,7 @@
 import os
 import random
 import time
-from dotenv import load_dotenv
+from app.config import Config
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -10,9 +10,8 @@ from langchain.schema import StrOutputParser
 from app.data import tarot_meaning, templates, tarot_card_images
 
 
-# 환경변수 로드
-load_dotenv()
-os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
+# API_KEY 설정
+os.environ['OPENAI_API_KEY'] = Config.OPENAI_API_KEY
 # 타로 의미 데이터 로드
 TAROT_CARD_MEANINGS = tarot_meaning.TAROT_CARD_MEANINGS
 # 타로 카드 이미지 URL
@@ -75,7 +74,7 @@ class TarotReader:
         system_template = self.base_template + (self.first_reading_prompt if is_first_reading else self.follow_up_prompt)
 
         return ChatPromptTemplate(
-            input_variables=["text", "chat_history", "cards", "topic", "card_keywords", "prompt_type"],
+            input_variables=["text", "chat_history", "cards", "topic", "card_keywords"],
             messages=[
                 SystemMessagePromptTemplate.from_template(system_template),
                 MessagesPlaceholder(variable_name="chat_history"),
@@ -149,8 +148,3 @@ class TarotReader:
 
         # 챗봇 응답 저장
         self.memory.chat_memory.add_ai_message(full_response)
-
-
-
-        
-        

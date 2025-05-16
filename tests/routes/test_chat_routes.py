@@ -10,8 +10,7 @@ def mock_current_user():
     mock_user.nickname = "테스트유저"
     return mock_user
 
-
-def test_chat_page_loads(client, mocker, mock_current_user):
+def test_chat_page_loads(client, mock_current_user):
     """
     ✅ /chat/ 페이지가 로그인된 유저에게 정상적으로 열리는지 확인
     
@@ -19,14 +18,11 @@ def test_chat_page_loads(client, mocker, mock_current_user):
     - mock_user로 로그인 유저가 정상적으로 인식되는지 확인
     - 페이지 로드 시 유저 닉네임이 포함된 응답을 받는지 확인
     """
-    mocker.patch("flask_login.utils._get_user", return_value=mock_current_user)
-    mocker.patch("app.routes.chat_routes.get_chat_list", return_value=[])
-
-    response = client.get("/chat/")
-
-    assert response.status_code == 200
-    assert "테스트유저" in response.get_data(as_text=True)
-
+    with patch("flask_login.utils._get_user", return_value=mock_current_user), \
+         patch("app.routes.chat_routes.get_chat_list", return_value=[]):
+        response = client.get("/chat/")
+        assert response.status_code == 200
+        assert "테스트유저" in response.get_data(as_text=True)
 
 def test_set_topic_updates_state(client):
     """ 
@@ -43,7 +39,7 @@ def test_set_topic_updates_state(client):
     assert data["status"] == "success"
     assert data["message"] == "토픽이 설정되었습니다."
 
-def test_draw_tarot_returns_cards(client, mocker):
+def test_draw_tarot_returns_cards(client):
     """
     ✅ 사용자가 타로카드를 뽑을 때 리딩&이미지URL 잘 반환하는지
 
@@ -51,44 +47,34 @@ def test_draw_tarot_returns_cards(client, mocker):
     - draw_tarot_cards() 결과 반환
     - "cards" 키에 카드 리딩 결과 포함
     """
-    mocker.patch.object(tarot_reader, "draw_tarot_cards", 
-                        return_value=["The Fool", "The Magician", "The High Priestess"])
-    mocker.patch("app.routes.chat_routes.get_images_url", 
-                 return_value={
-                 "The Fool": "/static/imgs/tarot_front_images/The Fool.png",
-                 "The Magician": "/static/imgs/tarot_front_images/The Magician.png",
-                 "The High Priestess": "/static/imgs/tarot_front_images/The High Priestess.png"
-                })
+    with patch.object(tarot_reader, "draw_tarot_cards", return_value=["The Fool", "The Magician", "The High Priestess"]), \
+         patch("app.routes.chat_routes.get_images_url", return_value={
+             "The Fool": "/static/imgs/tarot_front_images/The Fool.png",
+             "The Magician": "/static/imgs/tarot_front_images/The Magician.png",
+             "The High Priestess": "/static/imgs/tarot_front_images/The High Priestess.png"
+         }):
+        response = client.post("/chat/draw_tarot")
+        data = response.get_json()
 
-    response = client.post("/chat/draw_tarot")
-    data = response.get_json()
+        assert response.status_code == 200
+        assert data["cards"] == ["The Fool", "The Magician", "The High Priestess"]
+        assert data["card_images_url"] == {
+            "The Fool": "/static/imgs/tarot_front_images/The Fool.png",
+            "The Magician": "/static/imgs/tarot_front_images/The Magician.png",
+            "The High Priestess": "/static/imgs/tarot_front_images/The High Priestess.png"
+        }
 
-    assert response.status_code == 200
-
-    assert "cards" in data
-    assert data["cards"] == ["The Fool", "The Magician", "The High Priestess"]
-
-    assert "card_images_url" in data
-    assert data["card_images_url"] == {
-                 "The Fool": "/static/imgs/tarot_front_images/The Fool.png",
-                 "The Magician": "/static/imgs/tarot_front_images/The Magician.png",
-                 "The High Priestess": "/static/imgs/tarot_front_images/The High Priestess.png"
-                }
-
-
-def test_get_latest_chat(client, mocker, mock_current_user):
+def test_get_latest_chat(client, mock_current_user):
     """ 
     ✅ 가장 최근의 chat_id 조회
     """
-    mocker.patch("flask_login.utils._get_user", return_value=mock_current_user)
-    mocker.patch("app.routes.chat_routes.get_latest_chat_id", return_value=42)
+    with patch("flask_login.utils._get_user", return_value=mock_current_user), \
+         patch("app.routes.chat_routes.get_latest_chat_id", return_value=42):
+        response = client.get("/chat/get_latest_chat_id")
+        data = response.get_json()
 
-    response = client.get("/chat/get_latest_chat_id")
-    data = response.get_json()
-
-    assert response.status_code == 200
-    assert data["chat_id"] == 42
-
+        assert response.status_code == 200
+        assert data["chat_id"] == 42
 
 @pytest.mark.parametrize(
     "chat_id_key, expected_status, expected_count, expected_messages, description", [
@@ -112,16 +98,14 @@ def test_fetch_chat_messages_parametrize(client, history_test_data, empty_chat,
     # 테스트 케이스에 따른 chat_id 설정
     chat_id_map = {
         "chat1_id": history_test_data["chat1_id"],
-        "non_existent_id": 9999,  # 존재하지 않는 ID
-        "empty_chat_id": empty_chat  # 메시지가 없는 채팅
+        "non_existent_id": 9999,
+        "empty_chat_id": empty_chat
     }
     chat_id = chat_id_map[chat_id_key]
     
-    # API 호출
     response = client.get(f"/chat/{chat_id}")
     data = response.get_json()
 
-    # 검증
     assert response.status_code == expected_status, f"실패: {description}"
     assert isinstance(data, list), f"응답이 리스트가 아님: {description}"
     assert len(data) == expected_count, f"메시지 수 불일치: {description}"
@@ -131,48 +115,39 @@ def test_fetch_chat_messages_parametrize(client, history_test_data, empty_chat,
         assert data[i]["sender"] == expected_msg["sender"], f"sender 불일치: {description}"
         assert data[i]["message"] == expected_msg["message"], f"message 불일치: {description}"
 
-
-def test_delete_chat_success(client, mocker):
+def test_delete_chat_success(client):
     """
     ✅ 특정 채팅 기록 삭제 API
     """
-    mocker.patch("app.routes.chat_routes.delete_chat_from_db", return_value=True)
+    with patch("app.routes.chat_routes.delete_chat_from_db", return_value=True):
+        response = client.delete("/chat/delete_chat/999")
+        data = response.get_json()
 
-    response = client.delete("/chat/delete_chat/999")
-    data = response.get_json()
+        assert response.status_code == 200
+        assert data["success"] is True
 
-    assert response.status_code == 200
-    assert data["success"] is True
-
-
-def test_save_bot_response_empty_chat_history(client, mocker):
+def test_save_bot_response_empty_chat_history(client):
     """
     ✅ chat_history가 비어있을 때 'empty' 반환하는지 테스트
     """
-    # tarot_reader.memory.chat_memory.messages를 빈 리스트로 모킹
-    mocker.patch("app.routes.chat_routes.tarot_reader.memory.chat_memory.messages", [])
+    with patch("app.routes.chat_routes.tarot_reader.memory.chat_memory.messages", []):
+        response = client.post("/chat/save_bot_response", json={"chat_id": 1})
+        data = response.get_json()
 
-    response = client.post("/chat/save_bot_response", json={"chat_id": 1})
-    data = response.get_json()
+        assert response.status_code == 200
+        assert data["status"] == "empty"
+        assert data["message"] == "No chat history found."
 
-    assert response.status_code == 200
-    assert data["status"] == "empty"
-    assert data["message"] == "No chat history found."
-
-def test_save_bot_response_success(client, mocker):
+def test_save_bot_response_success(client):
     """
     ✅ chat_history가 있을 때 'success' 반환하는지 테스트
     """
-    # tarot_reader.memory.chat_memory.messages를 가짜 메시지 리스트로 모킹
-    fake_messages = [mocker.Mock(content="This is a test bot message.")]
-    mocker.patch("app.routes.chat_routes.tarot_reader.memory.chat_memory.messages", fake_messages)
+    fake_messages = [MagicMock(content="This is a test bot message.")]
+    with patch("app.routes.chat_routes.tarot_reader.memory.chat_memory.messages", fake_messages), \
+         patch("app.routes.chat_routes.save_message"):
+        response = client.post("/chat/save_bot_response", json={"chat_id": 1})
+        data = response.get_json()
 
-    # save_message 함수 동작한 상태
-    mocker.patch("app.routes.chat_routes.save_message")
-
-    response = client.post("/chat/save_bot_response", json={"chat_id": 1})
-    data = response.get_json()
-
-    assert response.status_code == 200
-    assert data["status"] == "success"
-    assert data["message"] == "Bot response saved."
+        assert response.status_code == 200
+        assert data["status"] == "success"
+        assert data["message"] == "Bot response saved."

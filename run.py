@@ -1,4 +1,6 @@
-from app import create_app
+import os
+from app import create_app, db
+os.environ.setdefault("APP_ENV", "dev") 
 
 app = create_app()
 
