@@ -8,3 +8,8 @@ image_test/
 tarot_service_ver1.py
 chat_ver1.js
 templates_save.py
+.vscode/
+.pytest_cache/
+.dockerignore
+docker-compose.yml
+Dockerfile
