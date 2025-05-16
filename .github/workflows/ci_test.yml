@@ -36,7 +36,7 @@ jobs:
         pytest --disable-warnings
     
     - name: Set up Docker Compose
-      run: docker compose up -f docker-compose.yml -d --build
+      run: docker compose -f docker-compose.yml up -d --build
 
     - name: Wait for Flask to be ready
       run: |
