@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build: .
+    # image: 590183915342.dkr.ecr.ap-northeast-2.amazonaws.com/flask-app-server:latest
+    container_name: flask-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      mysql:
+        condition: service_healthy
+  
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: tarot_database
+    ports:
+      - "3307:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci    
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
