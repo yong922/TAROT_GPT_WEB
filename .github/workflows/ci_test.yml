@@ -8,7 +8,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -31,3 +32,18 @@ jobs:
     - name: Run tests
       run: |
         pytest --disable-warnings
+    
+    - name: Set up Docker Compose
+      run: docker-compose up -d --build
+
+    - name: Wait for Flask to be ready
+      run: |
+        echo "Waiting for Flask to be ready...(7s)"
+        sleep 7
+
+    # - name: Run tests in container
+    #   run: docker exec flask-app pytest --disable-warnings
+
+    - name: Shut down Docker Compose
+      run: docker-compose down
+
