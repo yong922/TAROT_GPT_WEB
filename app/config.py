@@ -14,9 +14,14 @@ class Config:
     # CSRF 보호 비활성화 (Postman 테스트용)
     WTF_CSRF_ENABLED = False
 
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # 테스트용 더미 키
+    # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # 테스트용 더미 키
 
 class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # 메모리 DB를 사용하여 테스트 환경에서 데이터베이스 초기화
     TESTING = True  # Flask의 테스트 모드 활성화
     OPENAI_API_KEY = 'test-key'  # 테스트용 더미 키
+    SECRET_KEY = 'test-secret-key'  # 테스트용 더미 시크릿 키
+
+    # 테스트 실행 시 os.environ에도 값을 설정
+    os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
+    os.environ['SECRET_KEY'] = SECRET_KEY
