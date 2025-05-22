@@ -2,7 +2,6 @@ import os
 import sys
 
 # 로컬에서 pytest 실행 시 
-# APP_ENV = test
 if "pytest" in sys.modules:
     os.environ["APP_ENV"] = "test"
 
