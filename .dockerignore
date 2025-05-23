@@ -2,7 +2,10 @@
 .vscode
 .git
 .gitignore
+.github/
 *.log
 .venv
 .pytest_cache/
 tests/
+__pycache__/
+.env

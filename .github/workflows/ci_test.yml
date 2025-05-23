@@ -2,15 +2,17 @@ name: Run Tests on Push to eojin Branch
 
 on:
   push:
-    branches: [eojin]
+    branches:
+      - eojin
 
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
       APP-CONFIG: "test"
+
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -35,17 +37,25 @@ jobs:
       run: |
         pytest --disable-warnings
     
-    - name: Set up Docker Compose
-      run: docker compose -f docker-compose.yml up -d --build
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_EOJIN_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_EOJIN_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
 
-    - name: Wait for Flask to be ready
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, Tag, and Push image to ECR
+      id: build-image
+      env:
+        IMAGE_TAG: flask-app-server
       run: |
-        echo "Waiting for Flask to be ready...(7s)"
-        sleep 7
-
-    # - name: Run tests in container
-    #   run: docker exec flask-app pytest --disable-warnings
-
-    - name: Shut down Docker Compose
-      run: docker-compose down
-
+        docker build -t $IMAGE_TAG .
+        echo "Building the image..."
+        docker tag flask-app-server:latest ${{ steps.login-ecr.outputs.registry }}/$IMAGE_TAG:latest
+        echo "Pushing the image..."
+        docker push ${{ steps.login-ecr.outputs.registry }}/$IMAGE_TAG:latest
+        echo "${{ steps.login-ecr.outputs.registry }}/$IMAGE_TAG:latest pushed to ECR"

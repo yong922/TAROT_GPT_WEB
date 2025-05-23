@@ -14,5 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt \
 COPY . .
 
 # 5. 컨테이너에서 실행할 명령어
-# CMD ["python", "run.py"]
 CMD ["sh", "-c", "flask db upgrade && python run.py"]
