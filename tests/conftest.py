@@ -6,8 +6,6 @@ from app.config import Config
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 
-os.environ["APP_ENV"] = "test"
-
 @pytest.fixture
 def app():
     app = create_app(Config)
