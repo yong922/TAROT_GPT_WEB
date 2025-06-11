@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches:
-      - ay_action_test
-
+      - main
+  
 jobs:
   tests:
     runs-on: ubuntu-latest
